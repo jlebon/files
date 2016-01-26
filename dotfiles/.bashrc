@@ -68,13 +68,19 @@ fi
 # create an alias from $1 to "git $2 $3", then tries to also enable
 # auto-completion for it (with support for git aliases)
 function mkgitalias {
+
+	# create the bash alias
 	eval alias $1=\"git $2 $3\"
-	if [ "$(type -t _git_$2)" == "function" ]; then
-		__git_complete $1 _git_$2
-	else
-		gitalias=$(git config alias.$2)
-		if [ $? -eq 0 ]; then
-			__git_complete $1 _git_${gitalias% *}
+
+	# add autocomplete support if we find the right functions
+	if [ "$(type -t _git_complete)" == "function" ]; then
+		if [ "$(type -t _git_$2)" == "function" ]; then
+			__git_complete $1 _git_$2
+		else
+			gitalias=$(git config alias.$2)
+			if [ $? -eq 0 ]; then
+				__git_complete $1 _git_${gitalias% *}
+			fi
 		fi
 	fi
 }
