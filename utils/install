@@ -39,13 +39,21 @@ while [ $# -gt 0 ]; do
 	dir=$(dirname $file)
 	base=$(basename $file)
 
+	target=
 	if [[ $dir == "dotfiles" ]]; then
-		cp "$HOME/$base" "$file"
+		target="$HOME/$base"
 	elif [[ $dir == "bin" ]]; then
-		cp "/usr/local/bin/$base" "$file"
+		target="/usr/local/bin/$base"
 	elif [[ $dir == "sbin" ]]; then
-		cp "/usr/local/sbin/$base" "$file"
+		target="/usr/local/sbin/$base"
 	fi
+
+	if [ ! -e "$target" ]; then
+		echo "Creating empty file \"$target\"."
+		touch "$target"
+	fi
+
+	cp "$target" "$file"
 
 done
 

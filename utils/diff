@@ -30,12 +30,20 @@ while [ $# -gt 0 ]; do
 	dir=$(dirname $file)
 	base=$(basename $file)
 
+	target=
 	if [[ $dir == "dotfiles" ]]; then
-		git diff --no-index "$HOME/$base" "$file" || :
+		target="$HOME/$base"
 	elif [[ $dir == "bin" ]]; then
-		git diff --no-index "/usr/local/bin/$base" "$file" || :
+		target="/usr/local/bin/$base"
 	elif [[ $dir == "sbin" ]]; then
-		git diff --no-index "/usr/local/sbin/$base" "$file" || :
+		target="/usr/local/sbin/$base"
 	fi
+
+	if [ ! -e "$target" ]; then
+		echo "Local file \"$target\" does not exist, skipping."
+		continue
+	fi
+
+	git diff --no-index "$target" "$file" || :
 
 done
