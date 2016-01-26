@@ -1,0 +1,41 @@
+#!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
+
+if [[ $0 != "utils/diff" ]]; then
+	echo "ERROR: Must be run from repo root." >&2
+	exit 1
+fi
+
+if [ $# -eq 0 ]; then
+	echo "Compare repo file against installed file."
+	echo "Usage: $0 <file>..."
+	echo "Example: $0 dotfiles/.bashrc"
+	exit
+fi
+
+while [ $# -gt 0 ]; do
+
+	file=$1; shift
+
+	if [[ $file == /* ]]; then
+		echo "ERROR: Must use relative file paths." >&2
+		exit 1
+	fi
+
+	if [ -d "$file" ]; then
+		continue
+	fi
+
+	dir=$(dirname $file)
+	base=$(basename $file)
+
+	if [[ $dir == "dotfiles" ]]; then
+		git diff --no-index "$HOME/$base" "$file" || :
+	elif [[ $dir == "bin" ]]; then
+		git diff --no-index "/usr/local/bin/$base" "$file" || :
+	elif [[ $dir == "sbin" ]]; then
+		git diff --no-index "/usr/local/sbin/$base" "$file" || :
+	fi
+
+done

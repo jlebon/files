@@ -1,0 +1,83 @@
+#!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
+
+if [[ $0 != "utils/install" ]]; then
+	echo "ERROR: Must be run from repo root." >&2
+	exit 1
+fi
+
+if [ $# -eq 0 ]; then
+	echo "Save installed file in stash and replace with repo file."
+	echo "Usage: $0 <file>..."
+	echo "Example: $0 dotfiles/.bashrc"
+	exit
+fi
+
+# Workaround for git-diff-index bug which would incorrectly give an error code
+# for no reason. Calling git-status beforehand seems to fix it.
+git status &> /dev/null
+
+if ! git diff-index --quiet HEAD; then
+	echo "ERROR: Dirty workspace." >&2
+	exit 1
+fi
+
+while [ $# -gt 0 ]; do
+
+	file=$1; shift
+
+	if [[ $file == /* ]]; then
+		echo "ERROR: Must use relative file paths." >&2
+		exit 1
+	fi
+
+	if [ -d "$file" ]; then
+		continue
+	fi
+
+	dir=$(dirname $file)
+	base=$(basename $file)
+
+	if [[ $dir == "dotfiles" ]]; then
+		cp "$HOME/$base" "$file"
+	elif [[ $dir == "bin" ]]; then
+		cp "/usr/local/bin/$base" "$file"
+	elif [[ $dir == "sbin" ]]; then
+		cp "/usr/local/sbin/$base" "$file"
+	fi
+
+done
+
+# Workaround for git-diff-index bug which would incorrectly give an error code
+# for no reason. Calling git-status beforehand seems to fix it.
+git status &> /dev/null
+
+if git diff-index --quiet HEAD; then
+	echo "Files already at latest version."
+	exit 0
+fi
+
+git stash save "install backup"
+
+stashed=$(git stash show stash@{0} --name-only)
+
+echo "Saved the following files in stash stash@{0}:"
+for file in $stashed; do
+	echo "$file"
+done
+
+echo "Installing new files:"
+for file in $stashed; do
+
+	dir=$(dirname $file)
+	base=$(basename $file)
+
+	if [[ $dir == "dotfiles" ]]; then
+		cp -v "$file" "$HOME/$base"
+	elif [[ $dir == "bin" ]]; then
+		cp -v "$file" "/usr/local/bin/$base"
+	elif [[ $dir == "sbin" ]]; then
+		cp -v "$file" "/usr/local/sbin/$base"
+	fi
+done
