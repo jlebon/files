@@ -212,6 +212,9 @@ set backupdir=$HOME/.vim/backup//
 set directory=$HOME/.vim/swap//
 set writebackup
 
+" Create dirs if they don't already exist
+silent !mkdir -p $HOME/.vim/{undo,backup,swap} > /dev/null 2>&1
+
 " Make text 60 chars wide for weekly report and markdown
 autocmd BufRead,BufNewFile *.rpt set textwidth=60
 autocmd BufRead,BufNewFile *.md set textwidth=60
