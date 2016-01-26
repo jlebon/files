@@ -49,7 +49,7 @@ while [ $# -gt 0 ]; do
 	fi
 
 	if [ ! -e "$target" ]; then
-		echo "Creating empty file \"$target\"."
+		echo "INFO: Creating empty file \"$target\"."
 		touch "$target"
 	fi
 
@@ -62,30 +62,34 @@ done
 git status &> /dev/null
 
 if git diff-index --quiet HEAD; then
-	echo "Files already at latest version."
+	echo "INFO: Files already at latest version."
 	exit 0
 fi
 
-git stash save "install backup"
+git stash save "install backup" > /dev/null
 
+echo "INFO: Saving files in stash@{0}"
 stashed=$(git stash show stash@{0} --name-only)
 
-echo "Saved the following files in stash stash@{0}:"
-for file in $stashed; do
-	echo "$file"
-done
-
-echo "Installing new files:"
+echo "INFO: Installing files:"
 for file in $stashed; do
 
 	dir=$(dirname $file)
 	base=$(basename $file)
 
+	sudo=
+	target=
 	if [[ $dir == "dotfiles" ]]; then
-		cp -v "$file" "$HOME/$base"
+		target="$HOME/$base"
 	elif [[ $dir == "bin" ]]; then
-		cp -v "$file" "/usr/local/bin/$base"
+		target="/usr/local/bin/$base"
+		sudo=sudo
 	elif [[ $dir == "sbin" ]]; then
-		cp -v "$file" "/usr/local/sbin/$base"
+		target="/usr/local/sbin/$base"
+		sudo=sudo
 	fi
+
+	$sudo cp "$file" "$target"
+
+	echo -e "\t$target"
 done
