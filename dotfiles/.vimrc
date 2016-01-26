@@ -227,5 +227,7 @@ endif
 
 let g:vim_markdown_folding_disabled=1
 
-execute pathogen#infect()
-execute pathogen#helptags()
+if filereadable(expand("~/.vim/autoload/pathogen.vim"))
+   execute pathogen#infect()
+   execute pathogen#helptags()
+endif
