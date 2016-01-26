@@ -6,6 +6,7 @@
 [user]
 	name = Jonathan Lebon
 	email = jlebon@redhat.com
+	signingkey = 519CE313
 [core]
 	editor = /usr/bin/vim
 [alias]

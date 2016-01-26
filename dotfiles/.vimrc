@@ -31,6 +31,9 @@ set tabstop=4
 set cindent
 set cinoptions=(0,u0,U0
 
+" Set grep options
+set grepprg=grep\ -Inr\ --exclude-dir=.git
+
 " Allow changing tabbing using F6 & F7
 
 function! ChangeTabbing(newtab)
@@ -46,6 +49,9 @@ endfunction
 
 nnoremap <F6> :call ChangeTabbing(&shiftwidth - 1)<CR>
 nnoremap <F7> :call ChangeTabbing(&shiftwidth + 1)<CR>
+
+" Use tabbing of 2 for yaml
+autocmd BufRead,BufNewFile *.yaml,*.yml silent! :call ChangeTabbing(2)
 
 " Don't care about casing when the query is all lowercase
 set ignorecase
@@ -153,8 +159,12 @@ endfunction
 noremap <F4> :call ChangeTextWidth()<CR>
 
 " If we're editing code, automatically turn on the 80 width
-autocmd BufNewFile,BufRead *.java,*.c,*.cpp,*.cxx set textwidth=80
+autocmd BufNewFile,BufRead *.java,*.c,*.cpp,*.cxx,*.yaml,*.yml set textwidth=80
 autocmd BufNewFile,BufRead *.py set textwidth=79
+
+" File types that don't necessarily have an extension
+autocmd FileType bash,sh set textwidth=80
+autocmd FileType python set textwidth=79
 
 " Turn on coloured column (won't actually be on unless textwidth != 0)
 set colorcolumn=+1
@@ -184,6 +194,12 @@ command! SOURCE source $MYVIMRC
 " Make :W analogous to :w
 command! W :w
 
+" Allow saving of files as sudo when I forgot to start vim using sudo.
+cmap w!! w !sudo tee > /dev/null %
+
+" Toggle the NERDTree
+nnoremap <F8> :NERDTreeToggle<CR>
+
 " Remember undo history
 set undofile
 set undodir=$HOME/.vim/undo
@@ -208,3 +224,8 @@ if &term =~ '^screen'
    execute "set <xRight>=\e[1;*C"
    execute "set <xLeft>=\e[1;*D"
 endif
+
+let g:vim_markdown_folding_disabled=1
+
+execute pathogen#infect()
+execute pathogen#helptags()
