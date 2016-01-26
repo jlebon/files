@@ -199,3 +199,8 @@ function code() {
 	fi
 	cd $dir
 }
+
+# source any local mods
+if [ -f ~/.bashrc.local ]; then
+	source ~/.bashrc.local
+fi
