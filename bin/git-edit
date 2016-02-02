@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# If no rev given, opens vim with the currently modified and untracked
+# files. If a rev is given, open vim with the modified files in the rev.
+
+set -e
+
+print_help() {
+	echo "Usage: $0 [rev|file] [rev|file]..."
+	echo "If no [rev] given, open currently modified and untracked files in vim. If [rev] given, open files modified in [rev] in vim. If [file] given, also open the file."
+}
+
+if [ $# -eq 0 ]; then
+	#files=$(git ls-files -m --other --exclude-standard)
+	# This way is better because it avoids deleted files
+	untracked_files=$(git ls-files --other --exclude-standard)
+	# XXX: make this prettier somehow?
+	untracked_files=$(for file in $untracked_files; do
+	                     if ! file --mime "$file" | grep -q charset=binary; then
+			        realpath $(pwd)/$file
+	                     fi
+			  done)
+	modified_files=$(git status --porcelain | \
+	                 grep -E '^ *M ' | \
+	                 awk '{ print $2 }')
+	files="$untracked_files $modified_files"
+elif [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
+	print_help
+	exit 0
+else
+	files=
+	while test $# -gt 0; do
+		if [ -f "$1" ]; then
+			files="$files $1"
+		else
+			files="$files $(git diff-tree --no-commit-id --name-only -r $1)"
+		fi
+		shift
+	done
+fi
+
+cd $(git rev-parse --show-toplevel)
+
+canonfiles=
+for file in $files; do
+	canonfiles="$canonfiles $(readlink -f $file)"
+done
+
+cd -
+
+vim $canonfiles

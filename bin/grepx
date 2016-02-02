@@ -1,0 +1,48 @@
+#!/bin/bash
+set -euo pipefail
+
+# grepx will run grep -Inr on the search term and save the results to a file.
+# grepxi will open vim with the results set as the quicklist. If specific
+# numbers are specified to grepxi, then only those search results will be in
+# the quicklist.
+
+# check what we were launched as
+prog=$(basename $0)
+
+LAST="/tmp/grepx.last"
+QUICKLIST="/tmp/grepxi.quicklist"
+
+if [ "$prog" == "grepx" ]; then
+	grep -Inr "$@" > $LAST
+	grep -Inr --color=always "$@" | nl --number-width=1 | less -RFX
+else
+	if [ ! -f "$LAST" ]; then
+		echo "You must run grepx first."
+		exit 1
+	fi
+
+	if [ $# -eq 0 ]; then
+		cp $LAST $QUICKLIST
+	else
+		rm -f $QUICKLIST
+		while [ $# -ne 0 ]; do
+			if [[ $1 != *[!0-9]* ]]; then
+				tail -n +$1 $LAST | head -n 1 >> $QUICKLIST
+			else
+				echo "Usage: $0 [resultline]..."
+				exit 1
+			fi
+			shift
+		done
+	fi
+
+	# Open vim in quicklist mode
+	vim_args="-q $QUICKLIST"
+
+	# If there's more than one item in the list, open the quicklist window
+	if [ "$(wc -l < $QUICKLIST)" -gt 1 ]; then
+		vim_args="$vim_args -c cw"
+	fi
+
+	eval vim $vim_args
+fi

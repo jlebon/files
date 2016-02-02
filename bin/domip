@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# XXX: once we upgrade to libvirt 1.2.14, we will be
+# able to use the new domifaddr:
+# http://libvirt.org/git/?p=libvirt.git;a=commit;h=2f36e6944e6eb56a00e19fcd85ec8513461597c9
+# It might not be an improvement over directly reading from
+# the dnsmasq files, but it's worth investigating
+
+get_running_domains ()
+{
+	virsh list --name | sort
+}
+
+# $1 - domain name
+get_domain_mac ()
+{
+	virsh domiflist $1 | tail -n +3 | awk '/^vnet/ { print $5 }'
+}
+
+# $1 - mac
+get_ip_from_mac ()
+{
+	awk "/$1/ { print }" /var/lib/libvirt/dnsmasq/*.leases | \
+		sort -n | tail -n 1 | cut -f 3 -d ' '
+	#ip neighbour show | awk "/$1/ { print \$1 }"
+}
+
+# $1 - mac
+get_hostname_from_mac ()
+{
+	awk "/$1/ { print }" /var/lib/libvirt/dnsmasq/*.leases | \
+		sort -n | tail -n 1 | cut -f 4 -d ' '
+	#ip neighbour show | awk "/$1/ { print \$1 }"
+}
+
+main_output ()
+{
+	echo "Domain Hostname MAC IP"
+	for domain in $(get_running_domains); do
+		unset mac ip hostname
+		mac=$(get_domain_mac $domain)
+		if [ -n "$mac" ]; then
+			ip=$(get_ip_from_mac $mac)
+			hostname=$(get_hostname_from_mac $mac)
+		fi
+		echo "$domain ${hostname:-<N/A>} ${mac:-<N/A>} ${ip:-<N/A>}"
+		#if [ -n "$ip" ]; then
+		#	echo "$ip" > /tmp/$domain.ip
+		#	chmod a+r /tmp/$domain.ip
+                #fi
+	done
+}
+
+out=$(main_output | column --table)
+max=$(wc -L <<< "$out")
+head -n 1 <<< "$out"
+printf -- '-%.0s' $(seq 1 $max); echo
+tail -n +2 <<< "$out"
+#echo "IPs cached to /tmp/"

@@ -1,0 +1,91 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import os.path
+
+CSCOPE_DIR = "~/.cscope/"
+
+# Define paths to relevant codebases and files
+codebases = {}
+codebases["ostree"] = "/code/gnome.org/ostree"
+codebases["rpm-ostree"] = "/code/github.com/projectatomic/rpm-ostree"
+codebases["headers"] = "/usr/include"
+codebases["plymouth"] = "/code/git.freedesktop.org/plymouth"
+
+target_codebases = []
+
+def main():
+   os.chdir(os.path.expanduser(CSCOPE_DIR))
+   assert_valid_codebases()
+   parse_args()
+   build_cscope_files()
+
+def assert_valid_codebases():
+   for name, path in codebases.iteritems():
+      assert_valid_codebase(name, path)
+
+def assert_valid_codebase(name, path):
+   if not os.path.isdir(path):
+      print "Codebase %s has invalid path '%s'." % (name, path)
+      print "Please fix and try again."
+      exit(1)
+
+def parse_args():
+   if len(sys.argv) < 2:
+      print_usage()
+      print_current()
+      print_help()
+   else:
+      collect_codebases()
+
+def print_usage():
+   print "Runs cscope on the given codebases and updates the database."
+
+def print_current():
+   if os.path.isfile("current"):
+      os.system("echo Current codebases: `cat current`")
+
+def print_help():
+   print "Available codebases:",
+   for name in sorted(codebases):
+      print name,
+
+def collect_codebases():
+   for name in sys.argv[1:]:
+      assert_valid_codebase_name(name)
+      target_codebases.append(name)
+
+def assert_valid_codebase_name(name):
+   if name not in codebases:
+      print "Invalid codebase '%s'." % name
+      print_help()
+      exit(1)
+
+# XXX: make this whole function cleaner
+def build_cscope_files():
+   global target_codebases
+
+   if not len(target_codebases):
+      return
+
+   # Remove duplicates
+   target_codebases = list(set(target_codebases))
+
+   print "Building cscope database with paths:"
+   paths = []
+   for target_codebase in target_codebases:
+      print codebases[target_codebase]
+      paths.append(codebases[target_codebase])
+
+   # XXX: make cleaner
+   os.system("find %s -type f -a \( -name '*.c' -o -name '*.h' -o -name '*.cxx' \) \
+               > cscope.files" % ' '.join(paths))
+   os.system("cscope -b -q")
+
+   # Only used to know on which codebase we are
+   os.system("echo '%s' > current" % ' '.join(target_codebases))
+
+if __name__ == "__main__":
+   main()
+

@@ -1,0 +1,96 @@
+#!/bin/bash
+
+if [ $# -lt 1 ]; then
+	echo "Usage: $0 <domain> [<username> <password> [command [args]...]]"
+	exit
+fi
+
+dom=$1; shift
+
+if [ $# = 0 ]; then
+	user=vm
+	pass=vm
+elif [ $# = 1 ]; then
+	user=$1; shift
+	pass=vm
+else
+	user=$1; shift
+	pass=$1; shift
+fi
+
+get_running_domains ()
+{
+	virsh list --name
+}
+
+# $1 - domain name
+domain_running ()
+{
+	local domain
+	for domain in $(get_running_domains); do
+		if [[ $domain == $1 ]]; then
+			return 0
+		fi
+	done
+	return 1
+}
+
+# $1 - domain name
+get_domain_mac ()
+{
+	virsh domiflist $1 | tail -n +3 | awk '/^vnet/ { print $5 }'
+}
+
+# $1 - mac
+get_ip_from_mac ()
+{
+	awk "/$1/ { print }" /var/lib/libvirt/dnsmasq/*.leases | \
+		sort -n | tail -n 1 | cut -f 3 -d ' '
+	#ip neighbour show | awk "/$1/ { print \$1 }"
+}
+
+# $1 - domain name
+get_domain_ip ()
+{
+	local domain=$1
+
+	# create cache if not there
+	#if [ ! -f /tmp/$domain.ip ]; then
+		domain_running $domain
+		if [ $? != 0 ]; then
+			echo "Domain $domain is not running" >&2
+			exit 1
+		fi
+
+		mac=$(get_domain_mac $domain)
+		if [ $? != 0 ]; then
+			echo "Could not retrieve MAC of domain $domain" >&2
+			exit 1
+		fi
+
+		ip=$(get_ip_from_mac $mac)
+		if [ $? != 0 ]; then
+			echo "Could not retrieve IP of domain $domain" >&2
+			exit 1
+		fi
+
+		#echo "$ip" > /tmp/$domain.ip
+	#fi
+
+	#cat /tmp/$domain.ip
+	echo "$ip"
+}
+
+ip=$(get_domain_ip $dom)
+if [ $? != 0 ]; then
+	exit 1
+fi
+
+# Since these are VMs, we disable ssh's host key checking. The
+# UserKnownHostsFile option ensures we don't pollute the host file (so that in
+# case of collisions, we don't get a scary prompt). The StrictHostKeyChecking
+# option tells ssh to just accept the key without prompting.
+sshpass -p "$pass" \
+	ssh -o UserKnownHostsFile=/dev/null \
+	    -o StrictHostKeyChecking=no \
+	    $user@$ip "$@"
