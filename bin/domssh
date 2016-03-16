@@ -41,12 +41,51 @@ get_domain_mac ()
 	virsh domiflist $1 | tail -n +3 | awk '/^vnet/ { print $5 }'
 }
 
-# $1 - mac
-get_ip_from_mac ()
+# $1 - domain name
+get_domain_bridge ()
 {
-	awk "/$1/ { print }" /var/lib/libvirt/dnsmasq/*.leases | \
-		sort -n | tail -n 1 | cut -f 3 -d ' '
-	#ip neighbour show | awk "/$1/ { print \$1 }"
+	# two cases:
+	# 1. only the network used is specified (e.g. "default" or
+	#    "vagrant-libvirt"). in that case, we then have to look at the net-info
+	#    for that network to see what the bridge name is.
+	# 2. a specific bridge is mentioned (e.g. "virbr0"). then there's nothing
+	#    else to do.
+
+	iftype=$(virsh domiflist $1 | tail -n +3 | awk '{ print $2 }')
+	if [[ $iftype == bridge ]]; then
+		brg=$(virsh domiflist $1 | tail -n +3 | awk '{ print $3 }')
+	elif [[ $iftype == network ]]; then
+		network=$(virsh domiflist $1 | tail -n +3 | awk '{ print $3 }')
+		brg=$(virsh net-info default | awk '/^Bridge/ { print $2 }')
+	fi
+
+	echo $brg
+}
+
+# $1 - mac
+# $2 - bridge (e.g. virbr0)
+# $3 - field
+get_field_from_mac_and_brg ()
+{
+	mac=$1; shift
+	brg=$1; shift
+	field=$1; shift
+
+	python << EOF
+import json
+with open("/var/lib/libvirt/dnsmasq/$brg.status") as f:
+	data = json.load(f)
+field = ""
+expiry = -1
+for node in data:
+	if node['mac-address'] == "$mac":
+		if "$field" in node:
+			if node['expiry-time'] > expiry:
+				expiry = node['expiry-time']
+				field = node["$field"]
+if expiry > 0:
+	print field
+EOF
 }
 
 # $1 - domain name
@@ -68,7 +107,13 @@ get_domain_ip ()
 			exit 1
 		fi
 
-		ip=$(get_ip_from_mac $mac)
+		brg=$(get_domain_bridge $domain)
+		if [ $? != 0 ]; then
+			echo "Could not retrieve bridge of domain $domain" >&2
+			exit 1
+		fi
+
+		ip=$(get_field_from_mac_and_brg $mac $brg ip-address)
 		if [ $? != 0 ]; then
 			echo "Could not retrieve IP of domain $domain" >&2
 			exit 1
