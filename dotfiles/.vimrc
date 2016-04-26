@@ -86,6 +86,7 @@ endfunction
 " Formatting of the status bar
 " set statusline=%F%m%r%h%w%<\ {%Y}\ %=[%l,%v][%p%%][%n/%{NrBufs()}]
 set statusline=%F%m%r%h%w%<\ {%Y}\ %=[%l,%v][%p%%]
+"set statusline=%F%m%r%h%w%<\ {%Y}\ %=%{fugitive#statusline()}[%l,%v][%p%%]
 
 " Start searching as we type
 set incsearch
@@ -220,6 +221,8 @@ autocmd BufRead,BufNewFile *.rpt set textwidth=60
 autocmd BufRead,BufNewFile *.md set textwidth=60
 autocmd BufRead,BufNewFile *.doc set textwidth=72
 
+autocmd BufReadPost fugitive://* set bufhidden=delete
+
 " For compabitily with tmux's xterm-style keys
 if &term =~ '^screen'
    execute "set <xUp>=\e[1;*A"
@@ -234,3 +237,15 @@ if filereadable(expand("~/.vim/autoload/pathogen.vim"))
    execute pathogen#infect()
    execute pathogen#helptags()
 endif
+
+" Allow local projects to override settings
+" https://andrew.stwrt.ca/posts/project-specific-vimrc/
+set exrc
+set secure
+
+" Always put a vsplit on the right of current
+set splitright
+
+" Always put a vsplit under current
+" XXX: disabled because otherwise MBE goes below
+"set splitbelow

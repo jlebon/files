@@ -70,10 +70,10 @@ fi
 function mkgitalias {
 
 	# create the bash alias
-	eval alias $1=\"git $2 $3\"
+	eval alias $1=\"git $2 $3 $4\"
 
 	# add autocomplete support if we find the right functions
-	if [ "$(type -t _git_complete)" == "function" ]; then
+	if [ "$(type -t __git_complete)" == "function" ]; then
 		if [ "$(type -t _git_$2)" == "function" ]; then
 			__git_complete $1 _git_$2
 		else
@@ -204,6 +204,13 @@ function code() {
 		return 1
 	fi
 	cd $dir
+}
+
+# little function to easily edit known_hosts when we try to connect to an IP
+# whose key changed.
+# $1 -- line number of offending RSA key
+function delete_known_host() {
+	sed -i ${1}d ~/.ssh/known_hosts
 }
 
 # source any local mods

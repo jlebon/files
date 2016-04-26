@@ -8,10 +8,34 @@ CSCOPE_DIR = "~/.cscope/"
 
 # Define paths to relevant codebases and files
 codebases = {}
-codebases["ostree"] = "/code/gnome.org/ostree"
-codebases["rpm-ostree"] = "/code/github.com/projectatomic/rpm-ostree"
+codebases["ostree"] = "/code/gh/ostreedev/ostree/src" # use src to avoid glnx submodule
+codebases["rpm-ostree"] = "/code/gh/pa/rpm-ostree/src" # use src to avoid glnx submodule
+codebases["libglnx"] = "/code/git.gnome.org/libglnx"
 codebases["headers"] = "/usr/include"
 codebases["plymouth"] = "/code/git.freedesktop.org/plymouth"
+codebases["plymouth_rhel"] = "/code/pdr/plymouth/plymouth-0.8.9"
+codebases["linux_tmp"] = "/code/pkgs.fedoraproject.org/kernel/kernel-4.1.fc21/linux-4.1.13-101.fc21.x86_64"
+codebases["gdt"] = "/code/git.gnome.org/gnome-desktop-testing"
+codebases["libhif"] = "/code/gh/rsm/libhif"
+codebases["glib"] = "/code/git.gnome.org/glib"
+codebases["rpm"] = "/code/gh/rsm/rpm"
+codebases["libgsystem"] = "/code/git.gnome.org/libgsystem/src"
+codebases["systemd"] = "/code/gh/systemd/systemd"
+codebases["libsolv"] = "/code/gh/openSUSE/libsolv/src"
+codebases["librepo"] = "/code/gh/rsm/librepo/librepo"
+codebases["selinux"] = "/code/gh/SELinuxProject/selinux"
+codebases["libarchive"] = "/code/gh/libarchive/libarchive"
+#codebases["openshift"] = "/code/go/src/github.com/openshift/origin"
+#codebases["linux_git"] = "/home/jlebon/code/linux"
+#codebases["linux"] = "/usr/src/debug/kernel-3.19.fc21"
+#codebases["stap"] = "/home/jlebon/code/systemtap/systemtap"
+#codebases["glibc"] = "/usr/src/debug/glibc-2.20"
+#codebases["elfutils_git"] = "/home/jlebon/code/elfutils/elfutils"
+#codebases["elfutils"] = "/usr/src/debug/elfutils-0.161"
+#codebases["libvirt_git"] = "/home/yyz/jlebon/codebase/libvirt/libvirt"
+#codebases["libvirt"] = "/usr/src/debug/libvirt-1.1.3.9"
+#codebases["qemu"] = "/usr/src/debug/qemu-1.6.2"
+#codebases["gdb"] = "/home/yyz/jlebon/codebase/binutils-gdb"
 
 target_codebases = []
 

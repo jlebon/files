@@ -6,9 +6,16 @@
 set -e
 
 print_help() {
-	echo "Usage: $0 [rev|file] [rev|file]..."
+	echo "Usage: $0 [-u|--untracked] [rev|file] [rev|file]..."
 	echo "If no [rev] given, open currently modified and untracked files in vim. If [rev] given, open files modified in [rev] in vim. If [file] given, also open the file."
+	echo "  -u,--untracked  when no rev given, determines whether to include untracked files"
 }
+
+untracked=0
+if [ "$1" == -u ]; then
+	shift
+	untracked=1
+fi
 
 if [ $# -eq 0 ]; then
 	#files=$(git ls-files -m --other --exclude-standard)
@@ -23,7 +30,10 @@ if [ $# -eq 0 ]; then
 	modified_files=$(git status --porcelain | \
 	                 grep -E '^ *M ' | \
 	                 awk '{ print $2 }')
-	files="$untracked_files $modified_files"
+	files="$modified_files"
+	if [ $untracked == 1 ]; then
+		files="$files $untracked_files"
+	fi
 elif [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
 	print_help
 	exit 0
