@@ -1,6 +1,10 @@
+#!/bin/bash
+set -euo pipefail
+
 if [ -z "$(git config user.email)" ]; then
-	git config user.email you@example.com
+	git config user.email jlebon@redhat.com
 fi
+
 if [ -z "$(git config user.name)" ]; then
-	git config user.name "Your Name"
+	git config user.name "Jonathan Lebon"
 fi

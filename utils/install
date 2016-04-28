@@ -18,6 +18,23 @@ fi
 # for no reason. Calling git-status beforehand seems to fix it.
 git status &> /dev/null
 
+if [ -z "$(git config user.email)" ] || \
+   [ -z "$(git config user.name)" ]; then
+	echo "ERROR: A git user must be set up to stash current files." >&2
+	if [ -t 1 ]; then
+		read -n 1 -p "Call utils/git-setup (y/n)? " answer
+		echo
+		if [[ $answer == y ]]; then
+			utils/git-setup
+		else
+			exit 1
+		fi
+	else
+		echo "Consider utils/git-setup." >&2
+		exit 1
+	fi
+fi
+
 if ! git diff-index --quiet HEAD; then
 	echo "ERROR: Dirty workspace." >&2
 	exit 1
