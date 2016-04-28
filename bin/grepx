@@ -9,8 +9,8 @@ set -euo pipefail
 # check what we were launched as
 prog=$(basename $0)
 
-LAST="/tmp/grepx.last"
-QUICKLIST="/tmp/grepxi.quicklist"
+LAST="$HOME/.cache/grepx.last"
+QUICKLIST="$HOME/.cache/grepxi.quicklist"
 
 if [ "$prog" == "grepx" ]; then
 	grep -Inr "$@" > $LAST
