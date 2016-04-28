@@ -39,18 +39,21 @@ while [ $# -gt 0 ]; do
 	dir=$(dirname $file)
 	base=$(basename $file)
 
+	sudo=
 	target=
 	if [[ $dir == "dotfiles" ]]; then
 		target="$HOME/$base"
 	elif [[ $dir == "bin" ]]; then
 		target="/usr/local/bin/$base"
+		sudo=sudo
 	elif [[ $dir == "sbin" ]]; then
 		target="/usr/local/sbin/$base"
+		sudo=sudo
 	fi
 
 	if [ ! -e "$target" ]; then
 		echo "INFO: Creating empty file \"$target\"."
-		touch "$target"
+		$sudo touch "$target"
 	fi
 
 	cp "$target" "$file"
