@@ -39,7 +39,6 @@ while [ $# -gt 0 ]; do
 		target="/usr/local/sbin/$base"
 	fi
 
-	echo "INFO: Importing file \"$target\"."
 	cp -d "$target" "$file"
 
 done
