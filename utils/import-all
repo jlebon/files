@@ -2,18 +2,17 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-if [[ $0 != "utils/diff-all" ]] && \
-   [[ $0 != "utils/rdiff-all" ]]; then
+if [[ $0 != "utils/import-all" ]]; then
 	echo "ERROR: Must be run from repo root." >&2
 	exit 1
 fi
 
 if [ $# -ne 0 ]; then
-	echo "Compare all repo files against installed files."
+	echo "Overwrite all repo files with installed files."
 	echo "Usage: $0"
 	exit
 fi
 
 cat <(find dotfiles -not -type d) \
     <(find bin -not -type d) \
-    <(find sbin -not -type d) | xargs ${0%-all}
+    <(find sbin -not -type d) | xargs utils/import

@@ -2,14 +2,13 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-if [[ $0 != "utils/diff" ]] &&
-   [[ $0 != "utils/rdiff" ]]; then
+if [[ $0 != "utils/import" ]]; then
 	echo "ERROR: Must be run from repo root." >&2
 	exit 1
 fi
 
 if [ $# -eq 0 ]; then
-	echo "Compare repo file against installed file."
+	echo "Overwrite repo file with installed file."
 	echo "Usage: $0 <file>..."
 	echo "Example: $0 dotfiles/.bashrc"
 	exit
@@ -40,15 +39,7 @@ while [ $# -gt 0 ]; do
 		target="/usr/local/sbin/$base"
 	fi
 
-	if [ ! -e "$target" ]; then
-		echo "Local file \"$target\" does not exist, skipping."
-		continue
-	fi
+	echo "INFO: Importing file \"$target\"."
+	cp "$target" "$file"
 
-	if [[ $0 == "utils/diff" ]]; then
-		git diff --color --no-index "$target" "$file" || :
-	else
-		git diff --color --no-index "$file" "$target" || :
-	fi
-
-done | less -FRX
+done
