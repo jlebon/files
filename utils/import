@@ -40,6 +40,6 @@ while [ $# -gt 0 ]; do
 	fi
 
 	echo "INFO: Importing file \"$target\"."
-	cp "$target" "$file"
+	cp -d "$target" "$file"
 
 done
