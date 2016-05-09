@@ -107,18 +107,17 @@ mkgitalias gitdw diff --word-diff=color
 mkgitalias gitds diff --staged
 mkgitalias gitdsw diff --staged --word-diff=color
 
-# add support for bash-git-prompt
-# https://github.com/magicmonty/bash-git-prompt
+if [ -e /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
 
-if [ -d ~/.bash-git-prompt ] && \
-   [ -z "$GIT_PROMPT_DISABLE" ]; then
+	source /usr/share/git-core/contrib/completion/git-prompt.sh
 
-	GIT_PROMPT_THEME=Solarized_Modded
-	GIT_PROMPT_FETCH_REMOTE_STATUS=0
+	function stdprompt_time() { # $1 = color
+		echo -n "\[\033[0;${1}m\]"
+		echo -n "$(date +%H:%M:%S)"
+		echo -n "\[\033[0m\]"
+	}
 
-	function prompt_callback {
-
-		# This callback is meant to work with Solarized_Modded only
+	function stdprompt_dir() { # $1 = dir, $2 = git root
 
 		# Get the real path to the repo's root
 		local repo_realpath=$(git rev-parse --show-toplevel 2> /dev/null)
@@ -142,38 +141,58 @@ if [ -d ~/.bash-git-prompt ] && \
 				local tail=${PWD:$((-$diff))}
 			fi
 
-			# Print the full path
-			echo -n "$head$(tput setaf 2)$repo_name$(tput setaf 3)$tail$(tput setaf 0)"
+			echo -n "\[\033[0;${1}m\]"
+			echo -n "$head"
+
+			echo -n "\[\033[0;${2}m\]"
+			echo -n "$repo_name"
+
+			echo -n "\[\033[0;${1}m\]"
+			echo -n "$tail"
 		else
-			echo -n "\w$(tput setaf 0)"
+			echo -n "\[\033[0;${1}m\]"
+			echo -n "\w"
 		fi
+
+		echo -n "\[\033[0m\]"
 	}
 
-	source ~/.bash-git-prompt/gitprompt.sh
-
-elif [ -e /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
-
-	source /usr/share/git-core/contrib/completion/git-prompt.sh
+	function stdprompt_gitbranch() { # $1 = color
+		echo -n "\[\033[0;${1}m\]"
+		echo -n "\$(__git_ps1 \"%s\")"
+		echo -n "\[\033[0m\]"
+	}
 
 	function stdprompt() {
 
+		local rc=$?
+
+		# print time in blue
 		echo -n "["
-		echo -n "\u "
+		stdprompt_time 34
 
-		echo -n "\[\033[0;35m\]" # Dark grey
-		echo -n "\W"
-		echo -n "\[\033[0m\]"
+		echo -n " "
 
-		echo -n "\[\033[0;34m\]" # Light blue
-		echo -n "\$(__git_ps1 \" (%s)\")"
-		echo -n "\[\033[0m\]"
+		# print dir in yellow, git root in green
+		stdprompt_dir 33 32
+
+		# purple branch
+		if [[ -n "$(git rev-parse --show-toplevel 2>/dev/null)" ]]; then
+			echo -n " "
+			stdprompt_gitbranch 35
+		fi
 
 		echo -n "]"
+
+		if [ $rc -ne 0 ]; then
+			echo -n "\[\033[0;31m\]"
+		fi
+
+		echo -n "$ "
+		echo -n "\[\033[0m\]"
 	}
 
-	PS1="\$(if [[ \$? == 0 ]]; then echo \"$(stdprompt)\$\"; else \
-	     echo \"$(stdprompt)\[\033[0;31m\]\$\[\033[00m\]\"; fi) "
-	# " <-- sacrificial quotes to satisfy bash syntax colouring parsing
+	PROMPT_COMMAND="PS1=\$(stdprompt)"
 fi
 
 # Same thing as prompt_callback, but print the root only.
