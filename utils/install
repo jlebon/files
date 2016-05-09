@@ -73,7 +73,7 @@ while [ $# -gt 0 ]; do
 		$sudo touch "$target"
 	fi
 
-	cp -d "$target" "$file"
+	cp -d --remove-destination "$target" "$file"
 
 done
 
@@ -109,7 +109,7 @@ for file in $stashed; do
 		sudo=sudo
 	fi
 
-	$sudo cp -d "$file" "$target"
+	$sudo cp -d --remove-destination "$file" "$target"
 
 	echo -e "\t$target"
 done

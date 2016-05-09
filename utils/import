@@ -39,6 +39,6 @@ while [ $# -gt 0 ]; do
 		target="/usr/local/sbin/$base"
 	fi
 
-	cp -d "$target" "$file"
+	cp -d --remove-destination "$target" "$file"
 
 done
