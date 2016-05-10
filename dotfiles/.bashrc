@@ -111,6 +111,12 @@ if [ -e /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
 
 	source /usr/share/git-core/contrib/completion/git-prompt.sh
 
+	function stdprompt_hostname() { # $1 = color
+		echo -n "\[\033[0;${1}m\]"
+		echo -n "\h"
+		echo -n "\[\033[0m\]"
+	}
+
 	function stdprompt_time() { # $1 = color
 		echo -n "\[\033[0;${1}m\]"
 		echo -n "$(date +%H:%M:%S)"
@@ -169,7 +175,7 @@ if [ -e /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
 
 		# print time in blue
 		echo -n "["
-		stdprompt_time 34
+		stdprompt_hostname 34
 
 		echo -n " "
 
@@ -188,7 +194,12 @@ if [ -e /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
 			echo -n "\[\033[0;31m\]"
 		fi
 
-		echo -n "$ "
+		if [ $UID -ne 0 ]; then
+			echo -n "$ "
+		else
+			echo -n "# "
+		fi
+
 		echo -n "\[\033[0m\]"
 	}
 
