@@ -15,6 +15,13 @@ get_running_domains ()
 }
 
 # $1 - domain name
+get_domain_id ()
+{
+	virsh list | tail -n +3 | awk "\$2 ~ /$1/ { print \$1 }"
+}
+
+
+# $1 - domain name
 get_domain_mac ()
 {
 	virsh domiflist $1 | tail -n +3 | awk '{ print $5 }'
@@ -69,16 +76,17 @@ EOF
 
 main_output ()
 {
-	echo "Domain Hostname MAC IP"
+	echo "Id Domain Hostname MAC IP"
 	for domain in $(get_running_domains); do
-		unset mac brg ip hostname
+		unset id mac brg ip hostname
+		id=$(get_domain_id $domain)
 		mac=$(get_domain_mac $domain)
 		if [ -n "$mac" ]; then
 			brg=$(get_domain_bridge $domain)
 			ip=$(get_field_from_mac_and_brg $mac $brg ip-address)
 			hostname=$(get_field_from_mac_and_brg $mac $brg hostname)
 		fi
-		echo "$domain ${hostname:-<N/A>} ${mac:-<N/A>} ${ip:-<N/A>}"
+		echo "$id $domain ${hostname:-<N/A>} ${mac:-<N/A>} ${ip:-<N/A>}"
 		#if [ -n "$ip" ]; then
 		#	echo "$ip" > /tmp/$domain.ip
 		#	chmod a+r /tmp/$domain.ip
