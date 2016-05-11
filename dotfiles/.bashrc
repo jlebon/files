@@ -173,9 +173,15 @@ if [ -e /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
 
 		local rc=$?
 
-		# print time in blue
+		# print hostname
 		echo -n "["
-		stdprompt_hostname 34
+
+		# blue for normal, red for root
+		if [ $UID -ne 0 ]; then
+			stdprompt_hostname 34
+		else
+			stdprompt_hostname 31
+		fi
 
 		echo -n " "
 
