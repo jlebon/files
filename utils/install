@@ -86,7 +86,7 @@ if git diff-index --quiet HEAD; then
 	exit 0
 fi
 
-git stash save "install backup" > /dev/null
+git stash save "$(date): utils/install backup" > /dev/null
 
 echo "INFO: Saving files in stash@{0}"
 stashed=$(git stash show stash@{0} --name-only)
