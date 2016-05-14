@@ -131,6 +131,39 @@ if [ $? != 0 ]; then
 	exit 1
 fi
 
+# check if IP is valid
+if ! ping -c 1 -W 1 $ip &>/dev/null; then
+
+	echo -n "Waiting for valid IP..."
+
+	# Wait until a valid IP address is produced
+	i=0
+	while [ $i -lt 10 ]; do
+
+		ip=$(get_domain_ip $dom)
+		if [ $? != 0 ]; then
+			exit 1
+		fi
+
+		if ping -c 1 -W 1 $ip &>/dev/null; then
+			echo " done!"
+			break
+		fi
+
+		i=$((i + 1))
+		echo -n "."
+	done
+
+	if [ $i -eq 10 ]; then
+		echo
+		echo "Domain IP has been invalid for more than 10s" >&2
+		exit 1
+	fi
+fi
+
+# Wait until the ssh port is up in case this is a freshly booted domain
+sshwait $ip
+
 # Since these are VMs, we disable ssh's host key checking. The
 # UserKnownHostsFile option ensures we don't pollute the host file (so that in
 # case of collisions, we don't get a scary prompt). The StrictHostKeyChecking

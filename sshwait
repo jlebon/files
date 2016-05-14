@@ -1,0 +1,35 @@
+#!/bin/bash
+set -euo pipefail
+
+# If it's already open, then just exit quietly
+if echo | nc -w 500ms $1 22 2>&1 | grep -q SSH; then
+	exit 0
+fi
+
+echo -n "Waiting for open ssh port..."
+while true; do
+
+	out=$(echo | nc -w 1 $1 22 2>&1 || :)
+	if grep -q SSH <<< "$out"; then
+		break
+	fi
+
+	echo -n '.'
+
+	if [[ $out == "Ncat: Connection timed out." ]]; then
+		continue
+	fi
+
+	if [[ $out == "Ncat: Connection refused." ]] || \
+	   [[ $out == "Ncat: No route to host." ]]; then
+		sleep 1
+		continue
+	fi
+
+	echo
+	echo -n "Unknown error: "
+	echo "$out"
+	exit 1
+done
+
+echo " done!"
