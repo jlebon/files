@@ -10,6 +10,7 @@
 [core]
 	editor = /usr/bin/vim
 [alias]
+	cam = commit -am
 	scrap = reset --hard HEAD
 	nuke = reset --hard HEAD^
 	origin = reset --hard origin/master
