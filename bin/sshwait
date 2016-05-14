@@ -1,6 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 
+if [ $# -ne 1 ]; then
+	echo "Usage: $0 <hostname>"
+fi
+
 # If it's already open, then just exit quietly
 if echo | nc -w 500ms $1 22 2>&1 | grep -q SSH; then
 	exit 0
