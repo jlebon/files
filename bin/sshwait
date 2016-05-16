@@ -10,7 +10,7 @@ if echo | nc -w 500ms $1 22 2>&1 | grep -q SSH; then
 	exit 0
 fi
 
-echo -n "Waiting for open ssh port..."
+echo -n "Waiting for open SSH port..."
 while true; do
 
 	out=$(echo | nc -w 1 $1 22 2>&1 || :)
