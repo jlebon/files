@@ -128,6 +128,14 @@ if [ -e /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
 		# Get the real path to the repo's root
 		local repo_realpath=$(git rev-parse --show-toplevel 2> /dev/null)
 
+		# Get the current dir, but abbreviate homedir if present
+		local pwd=$PWD
+		if [[ $PWD == $HOME ]]; then
+			pwd='~'
+		elif [[ $PWD == $HOME/* ]]; then
+			pwd='~'${pwd:${#HOME}}
+		fi
+
 		# Are we even in a repo?
 		if [[ -n "$repo_realpath" ]]; then
 
@@ -137,14 +145,14 @@ if [ -e /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
 			# Calculate how deep we are in the repo
 			local diff=$((${#cur_realpath} - ${#repo_realpath}))
 
-			# Get the name of the repo (we use PWD instead of repo_realpath in case
-			# the repo name is itself a symlink)
-			local repo_name=$(basename ${PWD:0:$((${#PWD} - $diff))})
+			# Get the name of the repo (we use pwd instead of repo_realpath in
+			# case the repo name is itself a symlink)
+			local repo_name=$(basename ${pwd:0:$((${#pwd} - $diff))})
 
 			# Calculate the paths before and after the repo name
-			local head=${PWD:0:$((${#PWD} - $diff - ${#repo_name}))}
+			local head=${pwd:0:$((${#pwd} - $diff - ${#repo_name}))}
 			if [ $diff -gt 0 ]; then
-				local tail=${PWD:$((-$diff))}
+				local tail=${pwd:$((-$diff))}
 			fi
 
 			echo -n "\[\033[0;${1}m\]"
