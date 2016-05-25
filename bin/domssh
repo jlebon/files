@@ -132,7 +132,7 @@ if [ $? != 0 ]; then
 fi
 
 # check if IP is valid
-if ! ping -c 1 -W 1 $ip &>/dev/null; then
+if [[ -z $ip ]] || ! ping -c 1 -W 1 $ip &>/dev/null; then
 
 	echo -n "Waiting for valid IP..."
 
@@ -145,13 +145,17 @@ if ! ping -c 1 -W 1 $ip &>/dev/null; then
 			exit 1
 		fi
 
-		if ping -c 1 -W 1 $ip &>/dev/null; then
+		if [[ ! -z $ip ]] && ping -c 1 -W 1 $ip &>/dev/null; then
 			echo " done!"
 			break
 		fi
 
 		i=$((i + 1))
 		echo -n "."
+
+		if [[ -z $ip ]]; then
+			sleep 1
+		fi
 	done
 
 	if [ $i -eq 10 ]; then
