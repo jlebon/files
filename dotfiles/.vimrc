@@ -93,7 +93,7 @@ set incsearch
 
 " Show relative line numbers black on grey
 set number " Shows absolute line number at cursor pos
-"set relativenumber " Shows relative line number elsewhere
+set relativenumber " Shows relative line number elsewhere
 highlight LineNr ctermfg=black ctermbg=grey
 
 " Necessary for the MiniBufExplorer extension, which shows
