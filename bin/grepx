@@ -27,7 +27,9 @@ else
 		rm -f $QUICKLIST
 		while [ $# -ne 0 ]; do
 			if [[ $1 != *[!0-9]* ]]; then
-				tail -n +$1 $LAST | head -n 1 >> $QUICKLIST
+				x=$(tail -n +$1 $LAST)
+				y=$(head -n 1 <<< "$x")
+				echo "$y" >> $QUICKLIST
 			else
 				echo "Usage: $0 [resultline]..."
 				exit 1
