@@ -257,6 +257,19 @@ function delete_known_host() {
 	sed -i ${1}d ~/.ssh/known_hosts
 }
 
+function sleep_until() {
+	msg=$1; shift
+	until=$(date -d "$*" +'%s')
+	diff=$((until - $(date +'%s')))
+	if [ $diff -lt 1 ]; then
+		echo "Already passed that point in time, sir"
+	else
+		echo -n "Sleeping until $* (${diff}s)... "
+		sleep $diff
+		echo -e "$(tput bold)" "$msg" "$(tput sgr0)" "\a"
+	fi
+}
+
 # source any local mods
 if [ -f ~/.bashrc.local ]; then
 	source ~/.bashrc.local
