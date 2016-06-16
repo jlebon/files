@@ -43,11 +43,15 @@
 
 	odiff = diff origin/master
 	udiff = diff upstream/master
+	get-pr = "!f() { pr=$1; shift; git fetch upstream pull/$pr/merge \"$@\"; git checkout FETCH_HEAD; }; f"
 [pull]
 	rebase = preserve
 [push]
 	default = simple
 [diff]
 	algorithm = patience
+	renames = copies
 [include]
 	path = .gitconfig.local
+[commit]
+	verbose = true
