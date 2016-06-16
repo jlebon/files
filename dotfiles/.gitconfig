@@ -59,3 +59,8 @@
 	log = /usr/local/bin/diff-highlight | less
 	show = /usr/local/bin/diff-highlight | less
 	diff = /usr/local/bin/diff-highlight | less
+[color "diff-highlight"]
+oldNormal = "black #f8cbcb"
+oldHighlight = "black #ffaaaa"
+newNormal = "black #cbeecb"
+newHighlight = "black #aaffaa"
