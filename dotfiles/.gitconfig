@@ -55,3 +55,7 @@
 	path = .gitconfig.local
 [commit]
 	verbose = true
+[pager]
+	log = /usr/local/bin/diff-highlight | less
+	show = /usr/local/bin/diff-highlight | less
+	diff = /usr/local/bin/diff-highlight | less
