@@ -184,6 +184,13 @@ if [ -e /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
 		# print hostname
 		echo -n "["
 
+		# if this becomes too annoying, we could instead:
+		# - rely on bash history timestamps
+		# - the above + emit a new history msg to signal when commands finish
+		stdprompt_time 36
+
+		echo -n " "
+
 		# blue for normal, red for root
 		if [ $UID -ne 0 ]; then
 			stdprompt_hostname 34
@@ -268,6 +275,20 @@ function sleep_until() {
 		sleep $diff
 		echo -e "$(tput bold)" "$msg" "$(tput sgr0)" "\a"
 	fi
+}
+
+function bak() {
+	while [ $# -ne 0 ]; do
+		file=$1; shift
+		mv "$file" "$file.bak"
+	done
+}
+
+function unbak() {
+	while [ $# -ne 0 ]; do
+		file=$1; shift
+		mv "$file" "$(dirname $file)/$(basename $file .bak)"
+	done
 }
 
 # source any local mods
