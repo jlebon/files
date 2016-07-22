@@ -38,12 +38,13 @@
 	stashow = "!f() { if [ $# -eq 0 ]; then git stash list; else ( git show --color=always stash@{$1}; if git rev-parse --verify --quiet stash@{$1}^3; then git show --color=always stash@{$1}^3; fi; ) | LESS=FRX less -r; fi; }; f"
 
 	pr = "!f() { pr=$1; shift; git push origin HEAD:refs/heads/pr/$pr \"$@\"; }; f"
+	prb = "!f() { pr=$(git rev-parse --abbrev-ref HEAD); git pr $pr \"$@\"; }; f"
 
 	restamp = "! git commit --amend --no-edit --date=\"$(date -R)\""
 
 	odiff = diff origin/master
 	udiff = diff upstream/master
-	get-pr = "!f() { pr=$1; shift; git fetch upstream pull/$pr/merge \"$@\"; git checkout FETCH_HEAD; }; f"
+	get-pr = "!f() { pr=$1; shift; git fetch upstream pull/$pr/merge \"$@\" || git fetch upstream pull/$pr/head; git checkout FETCH_HEAD; }; f"
 [pull]
 	rebase = preserve
 [push]
@@ -51,6 +52,7 @@
 [diff]
 	algorithm = patience
 	renames = copies
+	compactionHeuristic = true
 [include]
 	path = .gitconfig.local
 [commit]
@@ -60,7 +62,11 @@
 	show = /usr/local/bin/diff-highlight | less
 	diff = /usr/local/bin/diff-highlight | less
 [color "diff-highlight"]
-oldNormal = "black #f8cbcb"
-oldHighlight = "black #ffaaaa"
-newNormal = "black #cbeecb"
-newHighlight = "black #aaffaa"
+	oldNormal    = "black #f8cbcb"
+	oldHighlight = "black #ff8888"
+	newNormal    = "black #cbeecb"
+	newHighlight = "black #aaffaa"
+[rebase]
+	autostash = true
+[grep]
+	lineNumber = true
