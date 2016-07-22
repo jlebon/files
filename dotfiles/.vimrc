@@ -163,6 +163,9 @@ noremap <F4> :call ChangeTextWidth()<CR>
 autocmd BufNewFile,BufRead *.java,*.c,*.cpp,*.cxx,*.yaml,*.yml set textwidth=80
 autocmd BufNewFile,BufRead *.py set textwidth=79
 
+" It defaults to ELF otherwise (wtf??)
+autocmd BufNewFile,BufRead *.am setf automake
+
 " File types that don't necessarily have an extension
 autocmd FileType bash,sh set textwidth=80
 autocmd FileType python set textwidth=79
