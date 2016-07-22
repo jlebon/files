@@ -46,7 +46,7 @@ codebases=$(cat "$CACHE_TXT")
 
 # is this the bash completion script requesting a list of choices?
 if [ "$codebase" == "<bash_completion>" ]; then
-	echo "$codebases" | xargs -n 1 basename
+	echo "$codebases" | xargs -n 1 basename | sort | uniq
 	exit 0
 fi
 
