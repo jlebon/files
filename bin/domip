@@ -42,7 +42,7 @@ get_domain_bridge ()
 		brg=$(virsh domiflist $1 | tail -n +3 | awk '{ print $3 }')
 	elif [[ $iftype == network ]]; then
 		network=$(virsh domiflist $1 | tail -n +3 | awk '{ print $3 }')
-		brg=$(virsh net-info default | awk '/^Bridge/ { print $2 }')
+		brg=$(virsh net-info $network | awk '/^Bridge/ { print $2 }')
 	fi
 
 	echo $brg

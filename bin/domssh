@@ -56,7 +56,7 @@ get_domain_bridge ()
 		brg=$(virsh domiflist $1 | tail -n +3 | awk '{ print $3 }')
 	elif [[ $iftype == network ]]; then
 		network=$(virsh domiflist $1 | tail -n +3 | awk '{ print $3 }')
-		brg=$(virsh net-info default | awk '/^Bridge/ { print $2 }')
+		brg=$(virsh net-info $network | awk '/^Bridge/ { print $2 }')
 	fi
 
 	echo $brg
@@ -138,7 +138,7 @@ if [[ -z $ip ]] || ! ping -c 1 -W 1 $ip &>/dev/null; then
 
 	# Wait until a valid IP address is produced
 	i=0
-	timeout=15
+	timeout=25
 	while [ $i -lt $timeout ]; do
 
 		ip=$(get_domain_ip $dom)
