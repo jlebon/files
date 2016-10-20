@@ -2,8 +2,8 @@
 
 # Find the codebase given
 # The filter is used when there are multiple possible matches
-if [ $# -ne 1 ] && [ $# -ne 2 ]; then
-	echo "Usage: $0 <codebase> <filter|lineno>"
+if [ $# -ne 1 ] && [ $# -ne 2 ] && [ $# -ne 3 ]; then
+	echo "Usage: $0 <codebase> [[filter] lineno]"
 	exit 1
 fi
 
@@ -15,6 +15,20 @@ codebase=$1; shift
 filter=
 if [ $# -ne 0 ]; then
 	filter=$1; shift
+fi
+
+# 1 arg --> filter or lineno
+# 2 args --> filter, and then lineno
+
+lineno=
+if [ $# -ne 0 ]; then
+	lineno=$1; shift
+else
+	# was filter actually a lineno?
+	if [[ $filter != *[!0-9]* ]]; then
+		lineno=$filter
+		filter=
+	fi
 fi
 
 function create_cache() {
@@ -77,14 +91,14 @@ fi
 if [ -z "$filter" ]; then
 	matches=$(echo "$codebases" | grep "/$codebase\$")
 
-# filtering by the number
-elif [[ $filter != *[!0-9]* ]]; then
-	matches=$(echo "$codebases" | grep "/$codebase\$")
-	matches=$(echo "$matches" | tail -n +$filter | head -n 1)
-
 # filtering by string
 else
 	matches=$(echo "$codebases" | grep "$filter.*/$codebase\$")
+fi
+
+# filtering by lineno
+if [ ! -z "$lineno" ] && [[ $lineno != *[!0-9]* ]]; then
+	matches=$(echo "$matches" | tail -n +$lineno | head -n 1)
 fi
 
 num=$(echo "$matches" | wc -l)

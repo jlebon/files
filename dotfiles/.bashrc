@@ -57,6 +57,7 @@ fi
 alias g='grepx'
 alias gi='grepxi'
 alias gg='grepx --exclude-dir=.git'
+alias ggc='grepx --exclude-dir=.git "--exclude=*.Po" "--exclude=*.Plo"'
 
 # Git aliases
 
@@ -211,6 +212,10 @@ if [ -e /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
 
 		echo -n "]"
 
+		if [ -n "${PS1_MARKER:-}" ]; then
+			echo -n " <$PS1_MARKER>"
+		fi
+
 		if [ $rc -ne 0 ]; then
 			echo -n "\[\033[0;31m\]"
 		fi
@@ -226,6 +231,10 @@ if [ -e /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
 
 	PROMPT_COMMAND="PS1=\$(stdprompt)"
 fi
+
+function mark_prompt {
+	PS1_MARKER="$1"
+}
 
 # Same thing as prompt_callback, but print the root only.
 # This is better than git rev-parse --show-toplevel because

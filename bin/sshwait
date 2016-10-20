@@ -25,7 +25,8 @@ while true; do
 	fi
 
 	if [[ $out == "Ncat: Connection refused." ]] || \
-	   [[ $out == "Ncat: No route to host." ]]; then
+	   [[ $out == "Ncat: No route to host." ]] || \
+	   [[ $out == "Ncat: Connection reset by peer." ]]; then
 		sleep 1
 		continue
 	fi

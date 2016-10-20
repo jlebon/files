@@ -8,11 +8,11 @@ fi
 dom=$1; shift
 
 if [ $# = 0 ]; then
-	user=vm
-	pass=vm
+	user=cloud-user
+	pass=atomic
 elif [ $# = 1 ]; then
 	user=$1; shift
-	pass=vm
+	pass=atomic
 else
 	user=$1; shift
 	pass=$1; shift

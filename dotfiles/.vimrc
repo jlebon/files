@@ -28,8 +28,8 @@ set preserveindent
 set softtabstop=0
 set shiftwidth=4
 set tabstop=4
-set cindent
-set cinoptions=(0,u0,U0
+"set cindent
+"set cinoptions=(0,u0,U0
 
 " Set grep options
 set grepprg=grep\ -Inr\ --exclude-dir=.git
@@ -236,11 +236,6 @@ endif
 
 let g:vim_markdown_folding_disabled=1
 
-if filereadable(expand("~/.vim/autoload/pathogen.vim"))
-   execute pathogen#infect()
-   execute pathogen#helptags()
-endif
-
 " Allow local projects to override settings
 " https://andrew.stwrt.ca/posts/project-specific-vimrc/
 set exrc
@@ -252,3 +247,19 @@ set splitright
 " Always put a vsplit under current
 " XXX: disabled because otherwise MBE goes below
 "set splitbelow
+
+" Rebuild cscope database with F9
+nnoremap <silent> <F9> :!cs $(cat ~/.cscope/current)<CR>:cs reset<CR><CR>
+
+" Disable YAML because it doesn't highlight e.g. XXX, TODO
+" https://github.com/sheerun/vim-polyglot/issues/157
+let g:polyglot_disabled = ['yaml']
+
+if filereadable(expand("~/.vim/autoload/pathogen.vim"))
+   execute pathogen#infect()
+   execute pathogen#helptags()
+endif
+
+set runtimepath^=~/.vim/bundle/ctrlp.vim
+let g:ctrlp_cmd = 'CtrlPBuffer'
+let g:ctrlp_match_current_file = 1
