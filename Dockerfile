@@ -1,6 +1,6 @@
 # Quick and easy way to get a homey pet container.
 
-FROM fedora:24
+FROM fedora:25
 MAINTAINER Jonathan Lebon <jlebon@redhat.com>
 
 RUN dnf install -y \
