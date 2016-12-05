@@ -4,7 +4,7 @@ FROM fedora:25
 MAINTAINER Jonathan Lebon <jlebon@redhat.com>
 
 RUN dnf remove -y \
-		vim-minimal \
+		vim-minimal && \
 	dnf install -y \
 		vim \
 		git \
