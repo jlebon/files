@@ -40,6 +40,12 @@ if ! git diff-index --quiet HEAD; then
 	exit 1
 fi
 
+if [ $UID == 0 ]; then
+	SUDO=
+else
+	SUDO=sudo
+fi
+
 while [ $# -gt 0 ]; do
 
 	file=$1; shift
@@ -62,10 +68,10 @@ while [ $# -gt 0 ]; do
 		target="$HOME/$base"
 	elif [[ $dir == "bin" ]]; then
 		target="/usr/local/bin/$base"
-		sudo=sudo
+		sudo=$SUDO
 	elif [[ $dir == "sbin" ]]; then
 		target="/usr/local/sbin/$base"
-		sudo=sudo
+		sudo=$SUDO
 	fi
 
 	if [ ! -e "$target" ]; then
@@ -103,10 +109,10 @@ for file in $stashed; do
 		target="$HOME/$base"
 	elif [[ $dir == "bin" ]]; then
 		target="/usr/local/bin/$base"
-		sudo=sudo
+		sudo=$SUDO
 	elif [[ $dir == "sbin" ]]; then
 		target="/usr/local/sbin/$base"
-		sudo=sudo
+		sudo=$SUDO
 	fi
 
 	$sudo cp -d --remove-destination "$file" "$target"
