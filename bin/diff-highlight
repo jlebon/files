@@ -3,7 +3,7 @@
 # NB: This is a modified version of the diff-highlight
 # script that ships with git. It adds highlighting of lines
 # on unmatched hunks. For more details, see:
-#   http://thread.gmane.org/gmane.comp.version-control.git/280742
+#   http://marc.info/?l=git&m=144651639126833
 
 use 5.008;
 use warnings FATAL => 'all';
