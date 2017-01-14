@@ -72,6 +72,9 @@ while [ $# -gt 0 ]; do
 	elif [[ $dir == "sbin" ]]; then
 		target="/usr/local/sbin/$base"
 		sudo=$SUDO
+	elif [[ $dir == "complete" ]]; then
+		target="/etc/bash_completion.d/$base"
+		sudo=$SUDO
 	fi
 
 	if [ ! -e "$target" ]; then
@@ -112,6 +115,9 @@ for file in $stashed; do
 		sudo=$SUDO
 	elif [[ $dir == "sbin" ]]; then
 		target="/usr/local/sbin/$base"
+		sudo=$SUDO
+	elif [[ $dir == "complete" ]]; then
+		target="/etc/bash_completion.d/$base"
 		sudo=$SUDO
 	fi
 

@@ -8,13 +8,13 @@ CSCOPE_DIR = "~/.cscope/"
 
 # Define paths to relevant codebases and files
 codebases = {}
-codebases["headers"] = "/usr/include"
 # use src to avoid glnx submodule
 codebases["ostree"] = "/code/gh/ostreedev/ostree/src"
 # use src to avoid glnx submodule
 codebases["rpm-ostree"] = "/code/gh/pa/rpm-ostree/src"
 codebases["libglnx"] = "/code/gnome/libglnx"
 codebases["libsoup"] = "/code/gnome/libsoup"
+codebases["headers"] = "/usr/include"
 codebases["plymouth"] = "/code/git.freedesktop.org/plymouth"
 codebases["plymouth_rhel"] = "/code/pdr/plymouth/plymouth-0.8.9"
 codebases["gdt"] = "/code/git.gnome.org/gnome-desktop-testing"
