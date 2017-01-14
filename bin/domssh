@@ -1,22 +1,14 @@
 #!/bin/bash
 
 if [ $# -lt 1 ]; then
-	echo "Usage: $0 <domain> [<username> <password> [command [args]...]]"
+	echo "Usage: $0 <domain> [command [args]...]]"
 	exit
 fi
 
 dom=$1; shift
 
-if [ $# = 0 ]; then
-	user=cloud-user
-	pass=atomic
-elif [ $# = 1 ]; then
-	user=$1; shift
-	pass=atomic
-else
-	user=$1; shift
-	pass=$1; shift
-fi
+user=cloud-user
+pass=atomic
 
 get_running_domains ()
 {
@@ -171,18 +163,24 @@ fi
 # Wait until the ssh port is up in case this is a freshly booted domain
 sshwait $ip
 
+SSH="sshpass -p "$pass" \
+		ssh -o UserKnownHostsFile=/dev/null \
+		    -o StrictHostKeyChecking=no \
+		    $user@$ip"
+
 # If we had to wait for an IP, then it's probably being provisioned for the
 # first time. Which means we should probably wait a bit to give cloud-init some
 # time to set up user creds.
 if [ $waited_for_ip == 1 ]; then
-	sleep 2
+	i=0
+	timeout=5
+	while [ $i -lt $timeout ]; do
+		if $SSH true &> /dev/null; then
+			break
+		fi
+		i=$((i + 1))
+		sleep 1
+	done
 fi
 
-# Since these are VMs, we disable ssh's host key checking. The
-# UserKnownHostsFile option ensures we don't pollute the host file (so that in
-# case of collisions, we don't get a scary prompt). The StrictHostKeyChecking
-# option tells ssh to just accept the key without prompting.
-sshpass -p "$pass" \
-	ssh -o UserKnownHostsFile=/dev/null \
-	    -o StrictHostKeyChecking=no \
-	    $user@$ip "$@"
+$SSH "$@"
