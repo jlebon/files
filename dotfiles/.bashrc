@@ -12,8 +12,8 @@ shopt -s direxpand
 HISTTIMEFORMAT="[%F %T] "
 
 # Infinite history
-HISTSIZE=
-HISTFILESIZE=
+HISTSIZE=-1
+HISTFILESIZE=-1
 
 export VAGRANT_DEFAULT_PROVIDER=libvirt
 export LIBVIRT_DEFAULT_URI=qemu:///system
@@ -58,6 +58,8 @@ alias g='grepx'
 alias gi='grepxi'
 alias gg='grepx --exclude-dir=.git'
 alias ggc='grepx --exclude-dir=.git "--exclude=*.Po" "--exclude=*.Plo"'
+
+alias venv='source ~/venv/bin/activate'
 
 # Git aliases
 
@@ -276,6 +278,7 @@ function delete_known_host() {
 function sleep_until() {
 	msg=$1; shift
 	until=$(date -d "$*" +'%s')
+	[ $? -eq 0 ] || return 1
 	diff=$((until - $(date +'%s')))
 	if [ $diff -lt 1 ]; then
 		echo "Already passed that point in time, sir"

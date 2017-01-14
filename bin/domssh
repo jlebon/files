@@ -84,7 +84,7 @@ for node in data:
 				expiry = node['expiry-time']
 				field = node["$field"]
 if expiry > 0:
-	print field
+	print(field)
 EOF
 }
 
@@ -132,9 +132,11 @@ if [ $? != 0 ]; then
 fi
 
 # check if IP is valid
+waited_for_ip=0
 if [[ -z $ip ]] || ! ping -c 1 -W 1 $ip &>/dev/null; then
 
 	echo -n "Waiting for valid IP..."
+	waited_for_ip=1
 
 	# Wait until a valid IP address is produced
 	i=0
@@ -168,6 +170,13 @@ fi
 
 # Wait until the ssh port is up in case this is a freshly booted domain
 sshwait $ip
+
+# If we had to wait for an IP, then it's probably being provisioned for the
+# first time. Which means we should probably wait a bit to give cloud-init some
+# time to set up user creds.
+if [ $waited_for_ip == 1 ]; then
+	sleep 2
+fi
 
 # Since these are VMs, we disable ssh's host key checking. The
 # UserKnownHostsFile option ensures we don't pollute the host file (so that in

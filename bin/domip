@@ -17,7 +17,7 @@ get_running_domains ()
 # $1 - domain name
 get_domain_id ()
 {
-	virsh list | tail -n +3 | awk "\$2 ~ /$1/ { print \$1 }"
+	virsh list | tail -n +3 | awk "\$2 ~ /^$1\$/ { print \$1 }"
 }
 
 
@@ -70,7 +70,7 @@ for node in data:
 				expiry = node['expiry-time']
 				field = node["$field"]
 if expiry > 0:
-	print field
+	print(field)
 EOF
 }
 

@@ -18,20 +18,20 @@ if [ "$1" == -u ]; then
 fi
 
 if [ $# -eq 0 ]; then
-	#files=$(git ls-files -m --other --exclude-standard)
-	# This way is better because it avoids deleted files
-	untracked_files=$(git ls-files --other --exclude-standard)
-	# XXX: make this prettier somehow?
-	untracked_files=$(for file in $untracked_files; do
-	                     if ! file --mime "$file" | grep -q charset=binary; then
-			        realpath $(pwd)/$file
-	                     fi
-			  done)
 	modified_files=$(git status --porcelain | \
 	                 grep -E '^ *M ' | \
 	                 awk '{ print $2 }')
 	files="$modified_files"
 	if [ $untracked == 1 ]; then
+		#files=$(git ls-files -m --other --exclude-standard)
+		# This way is better because it avoids deleted files
+		untracked_files=$(git ls-files --other --exclude-standard)
+		# XXX: make this prettier somehow?
+		untracked_files=$(for file in $untracked_files; do
+		                     if ! file --mime "$file" | grep -q charset=binary; then
+		                         realpath $(pwd)/$file
+		                     fi
+		                  done)
 		files="$files $untracked_files"
 	fi
 elif [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
