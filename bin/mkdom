@@ -27,27 +27,30 @@ if [ $# -gt 0 ]; then
 	ncpu=$1; shift
 fi
 
-cat << EOF
-Name    $dom
-Source  $srcimg
-cidata  $cidata
-RAM     $ram
-CPUs    $ncpu
-EOF
+CPU=CPU
+if [ $ncpu -gt 1 ]; then
+	CPU+=s
+fi
+
+echo -n "Creating domain $dom (${ram}M RAM and $ncpu $CPU)... "
 
 # create the new image
 newimg="/var/lib/libvirt/images/$dom.qcow2"
 
-qemu-img create -f qcow2 -o backing_file="$srcimg" "$newimg"
+qemu-img create -q -f qcow2 -o backing_file="$srcimg" "$newimg"
 
 # create the new domain
 if [ -n "$cidata" ] && [ "$cidata" != "none" ]; then
-	virt-install --import --name="$dom" --os-variant=rhel7 --ram="$ram" \
-		--vcpus="$ncpu" --disk path="$newimg",format=qcow2,bus=virtio \
+	virt-install --quiet --import --name="$dom" \
+		--os-variant=rhel7 --ram="$ram" --vcpus="$ncpu" \
+		--disk path="$newimg",format=qcow2,bus=virtio \
 		--disk path="$cidata",device=cdrom,readonly=on \
 		--network bridge=virbr0 --noautoconsole
 else
-	virt-install --import --name="$dom" --os-variant=rhel7 --ram="$ram" \
-		--vcpus="$ncpu" --disk path="$newimg",format=qcow2,bus=virtio \
+	virt-install --quiet --import --name="$dom" \
+		--os-variant=rhel7 --ram="$ram" --vcpus="$ncpu" \
+		--disk path="$newimg",format=qcow2,bus=virtio \
 		--network bridge=virbr0 --noautoconsole
 fi
+
+echo "done!"

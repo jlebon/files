@@ -40,5 +40,6 @@ genisoimage \
 	-volid cidata \
 	-joliet \
 	-rock \
+	-quiet \
 	$dir/user-data \
 	$dir/meta-data
