@@ -36,8 +36,6 @@ while [ $# -gt 0 ]; do
 		target="$HOME/$base"
 	elif [[ $dir == "bin" ]]; then
 		target="/usr/local/bin/$base"
-	elif [[ $dir == "sbin" ]]; then
-		target="/usr/local/sbin/$base"
 	elif [[ $dir == "complete" ]]; then
 		target="/etc/bash_completion.d/$base"
 	fi

@@ -16,5 +16,4 @@ fi
 
 cat <(find dotfiles -not -type d) \
     <(find bin -not -type d) \
-    <(find complete -not -type d) \
-    <(find sbin -not -type d) | xargs ${0%-all}
+    <(find complete -not -type d) | xargs ${0%-all}
