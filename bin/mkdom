@@ -45,12 +45,12 @@ if [ -n "$cidata" ] && [ "$cidata" != "none" ]; then
 		--os-variant=rhel7 --ram="$ram" --vcpus="$ncpu" \
 		--disk path="$newimg",format=qcow2,bus=virtio \
 		--disk path="$cidata",device=cdrom,readonly=on \
-		--network bridge=virbr0 --noautoconsole
+		--network network=default --noautoconsole
 else
 	virt-install --quiet --import --name="$dom" \
 		--os-variant=rhel7 --ram="$ram" --vcpus="$ncpu" \
 		--disk path="$newimg",format=qcow2,bus=virtio \
-		--network bridge=virbr0 --noautoconsole
+		--network network=default --noautoconsole
 fi
 
 echo "done!"

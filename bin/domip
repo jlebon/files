@@ -1,13 +1,10 @@
 #!/bin/bash
 
-# XXX: once we upgrade to libvirt 1.2.14, we will be
-# able to use the new domifaddr:
-# http://libvirt.org/git/?p=libvirt.git;a=commit;h=2f36e6944e6eb56a00e19fcd85ec8513461597c9
-# It might not be an improvement over directly reading from
-# the dnsmasq files, but it's worth investigating
-# XXX: update. it doesn't always work for some reason, haven't investigated
-# much. seems like a bug with the command. for now, reading directly from
-# dnsmasq is more reliable.
+# XXX: we should be able to use domifaddr, though that only works if the domain
+# was created with --network network=<mynetwork>, not with e.g. bridge=, so we
+# should probably still keep the bridge fallback.
+
+# XXX: need to switch over to using libvirt-python
 
 get_running_domains ()
 {
