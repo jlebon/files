@@ -10,6 +10,9 @@ _dom_listing() {
 		else
 			opts=$(virsh list --all --name)
 		fi
+	# domnuke can operate on multiple VMs
+	elif [ $1 == domnuke ]; then
+		opts=$(virsh list --all --name)
 	else
 		return 0
 	fi
