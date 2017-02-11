@@ -14,8 +14,11 @@ RUN dnf remove -y \
 
 COPY . /files
 
-RUN /files/utils/git-setup && \
-    /files/utils/install-all
+# the scripts need to be run from the root of the repo
+WORKDIR /files
+
+RUN utils/git-setup && \
+    utils/install-all
 
 CMD ["/bin/bash"]
 
