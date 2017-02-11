@@ -14,11 +14,8 @@ RUN dnf remove -y \
 
 COPY . /files
 
-WORKDIR /files
-
-RUN utils/git-setup
-
-RUN utils/install-all
+RUN /files/utils/git-setup && \
+    /files/utils/install-all
 
 CMD ["/bin/bash"]
 
