@@ -21,6 +21,12 @@ $ utils/install-all                 # all files
 
 Files on disk are first stashed before being overwritten.
 
+#### All-in-one (install & reload)
+
+```
+$ source utils/setup
+```
+
 #### From disk to repo
 
 ```
