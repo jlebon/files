@@ -22,7 +22,7 @@ nnoremap <F3> :set paste!<CR>:set paste?<CR>
 set autoindent
 
 " Uses spaces instead of tabs
-set noexpandtab
+set expandtab
 set copyindent
 set preserveindent
 set softtabstop=0
@@ -234,7 +234,10 @@ if &term =~ '^screen'
    execute "set <xLeft>=\e[1;*D"
 endif
 
-let g:vim_markdown_folding_disabled=1
+" Start with no folding enabled so that when a file is
+" opened it's never folded. It will get reenabled as soon as
+" we zc a fold.
+set nofoldenable
 
 " Allow local projects to override settings
 " https://andrew.stwrt.ca/posts/project-specific-vimrc/
@@ -254,6 +257,26 @@ nnoremap <silent> <F9> :!cs $(cat ~/.cscope/current)<CR>:cs reset<CR><CR>
 " Disable YAML because it doesn't highlight e.g. XXX, TODO
 " https://github.com/sheerun/vim-polyglot/issues/157
 let g:polyglot_disabled = ['yaml']
+
+" Don't lint when changing the text (it will then only lint
+" when we open the file and when we save it).
+let g:ale_lint_on_text_changed = 0
+
+" Only report actual errors
+let g:ale_python_pylint_options = '-E'
+let g:ale_yaml_yamllint_options = '-d relaxed'
+
+let g:vimwiki_folding = 'expr'
+
+" disable url shortening
+let g:vimwiki_url_maxsave=0
+let g:vimwiki_list = [{'path': '~/.vimwiki/', 'syntax': 'markdown', 'ext': '.md'}]
+
+" It just doesn't make sense to lint C files on a per-file
+" basis. We're gonna run into e.g. include issues and such.
+" XXX: check if we can add a new linter that just compiles
+" the project and reports errors.
+let g:ale_linters = {'c': [], 'cpp': []}
 
 if filereadable(expand("~/.vim/autoload/pathogen.vim"))
    execute pathogen#infect()

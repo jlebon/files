@@ -21,6 +21,9 @@ export LIBVIRT_DEFAULT_URI=qemu:///system
 export EDITOR=vim
 export VISUAL=vim
 
+export GOPATH=$HOME/go
+export PATH=$GOPATH/bin:$PATH
+
 function whichpkg() {
 
 	file=$(which $1)
@@ -60,6 +63,7 @@ alias gg='grepx --exclude-dir=.git'
 alias ggc='grepx --exclude-dir=.git "--exclude=*.Po" "--exclude=*.Plo"'
 
 alias venv='source ~/venv/bin/activate'
+alias venv-py2='source ~/venv-py2/bin/activate'
 
 # Git aliases
 

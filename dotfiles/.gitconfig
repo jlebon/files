@@ -1,5 +1,8 @@
 [color]
 	ui = true
+	# We use always here instead of auto because otherwise
+	# we don't get any coloring with Ggrep in vim.
+	grep = always
 [merge]
 	conflictstyle=diff3
 	tool = meld
@@ -25,6 +28,8 @@
 	rei = rebase -i
 	rec = rebase --continue
 	rea = rebase --abort
+	cpc = cherry-pick --continue
+	cpa = cherry-pick --abort
 	l = log --pretty=oneline
 	la = log --pretty=format:'%C(yellow)%h %Cred%ad %Cblue%an%Cgreen%d %Creset%s' --date=short
 	lg = log --graph --pretty=format:'%C(yellow)%h %Cred%ad %Cblue%an%Cgreen%d %Creset%s' --date=short
@@ -39,6 +44,7 @@
 
 	pr = "!f() { set -e; pr=$1; shift; git push origin HEAD:refs/heads/pr/$pr \"$@\"; }; f"
 	prb = "!f() { set -e; pr=$(git rev-parse --abbrev-ref HEAD); git pr $pr \"$@\"; }; f"
+	prd = "!f() { set -e; b=$1; shift; git push origin :pr/$b; git branch -D $b; }; f"
 
 	restamp = "! git commit --amend --no-edit --date=\"$(date -R)\""
 
