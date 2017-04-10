@@ -36,7 +36,8 @@ function create_cache() {
 	# codebase's name, which also has a .git subdirectory. It then
 	# prints the path of the directory.
 	find -L /code/ \
-		-maxdepth 4 \
+		-maxdepth 5 \
+		-type d \
 		-path "*/.git" \
 		-prune | xargs dirname | sort > "$CACHE_TXT"
 }
@@ -46,7 +47,7 @@ if [ -f "$CACHE_TXT" ] && [ -f "$CACHE_MD5" ]; then
 
 	# check that the listing is still valid
 	cursum=$(cat "$CACHE_MD5")
-	newsum=$(tree -d -L 3 /code | md5sum | cut -f 1 -d ' ')
+	newsum=$(tree -d -L 4 /code | md5sum | cut -f 1 -d ' ')
 	if [ "$cursum" != "$newsum" ]; then
 		create_cache
 		echo "$newsum" > "$CACHE_MD5"
