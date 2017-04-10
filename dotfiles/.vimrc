@@ -247,9 +247,8 @@ set secure
 " Always put a vsplit on the right of current
 set splitright
 
-" Always put a vsplit under current
-" XXX: disabled because otherwise MBE goes below
-"set splitbelow
+" Always put an hsplit under current
+set splitbelow
 
 " Rebuild cscope database with F9
 nnoremap <silent> <F9> :!cs $(cat ~/.cscope/current)<CR>:cs reset<CR><CR>

@@ -53,10 +53,6 @@ alias findx='sudo find / -mount -iname'
 alias t='tmux'
 alias ta='tmux attach'
 
-if [ -e /usr/bin/vimx ]; then
-	alias vim='/usr/bin/vimx'
-fi
-
 alias g='grepx'
 alias gi='grepxi'
 alias gg='grepx --exclude-dir=.git'
