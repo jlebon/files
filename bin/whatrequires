@@ -1,0 +1,42 @@
+#!/bin/bash
+set -euo pipefail
+
+# A more powerful `rpm -q --whatrequires` which actually
+# queries capabilities rather than just pkgname.
+
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 [-v|--verbose] PKG [PKG...]"
+    exit 0
+fi
+
+verbose=0
+capreqs=
+pkgreqs=
+while [ $# -ne 0 ]; do
+    if [ "$1" == "-v" ] || [ "$1" == "--verbose" ]; then
+        verbose=1; shift; continue
+    fi
+    pkg=$1; shift
+    rpm -q "$pkg" || continue
+    while IFS='' read -r cap || [[ -n $cap ]]; do
+        if rpm --quiet -q --whatrequires "$cap"; then
+            while IFS='' read -r pkgreq || [[ -n $pkgreq ]]; do
+                capreqs="$capreqs\n$cap: $pkgreq"
+                pkgreqs="$pkgreqs\n$pkgreq"
+            done < <(rpm -q --whatrequires "$cap")
+        fi
+    done < <(rpm -ql --provides $pkg)
+done
+
+if [ -n "$capreqs" ]; then
+    if [ $verbose == 0 ]; then
+        echo -e "$pkgreqs" | sort | uniq
+    else
+        echo
+        echo "Summary:"
+        echo -e "$pkgreqs" | sort | uniq
+        echo
+        echo "Detailed:"
+        echo -e "$capreqs" | sort | uniq
+    fi
+fi
