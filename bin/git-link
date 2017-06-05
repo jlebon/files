@@ -15,7 +15,7 @@ while read line; do
         ln -vsf $line
         at_least_one=1
     fi
-done <<< "$(find .git/links -mindepth 1)"
+done <<< "$(find .git/links -mindepth 1 -maxdepth 1)"
 
 if [ $at_least_one == 0 ]; then
     echo "No links!"

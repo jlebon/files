@@ -58,8 +58,10 @@ alias gi='grepxi'
 alias gg='grepx --exclude-dir=.git'
 alias ggc='grepx --exclude-dir=.git "--exclude=*.Po" "--exclude=*.Plo"'
 
-alias venv='source ~/venv/bin/activate'
-alias venv-py2='source ~/venv-py2/bin/activate'
+alias venv='source ~/.venv/bin/activate'
+alias venv-py2='source ~/.venv-py2/bin/activate'
+
+alias domlist='virsh list --all'
 
 # Git aliases
 

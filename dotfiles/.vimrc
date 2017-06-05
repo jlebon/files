@@ -138,14 +138,14 @@ nnoremap <C-J> :bnext<CR>
 nnoremap <C-K> :bprev<CR>
 nnoremap <C-H> :bd<CR>
 
-" Switch between 0, 60, 72, and 80 textwidth
+" Switch between 0, 60, 80, and 92 textwidth
 function! ChangeTextWidth()
    if &textwidth == 0
       set textwidth=60
    elseif &textwidth == 60
-      set textwidth=72
-   elseif &textwidth == 72
       set textwidth=80
+   elseif &textwidth == 80
+      set textwidth=92
    else
       set textwidth=0
    endif
@@ -160,7 +160,7 @@ endfunction
 noremap <F4> :call ChangeTextWidth()<CR>
 
 " If we're editing code, automatically turn on the 80 width
-autocmd BufNewFile,BufRead *.java,*.c,*.cpp,*.cxx,*.yaml,*.yml set textwidth=80
+autocmd BufNewFile,BufRead *.js,*.java,*.c,*.cpp,*.cxx,*.yaml,*.yml set textwidth=80
 autocmd BufNewFile,BufRead *.py set textwidth=79
 
 " It defaults to ELF otherwise (wtf??)
@@ -252,6 +252,10 @@ set splitbelow
 
 " Rebuild cscope database with F9
 nnoremap <silent> <F9> :!cs $(cat ~/.cscope/current)<CR>:cs reset<CR><CR>
+
+" Easy quickfix navigation
+nnoremap <silent> ]q :cn<CR>
+nnoremap <silent> [q :cp<CR>
 
 " Disable YAML because it doesn't highlight e.g. XXX, TODO
 " https://github.com/sheerun/vim-polyglot/issues/157
