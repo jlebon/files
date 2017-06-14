@@ -76,3 +76,5 @@
 	autostash = true
 [grep]
 	lineNumber = true
+[init]
+	templateDir = ~/.git_templates

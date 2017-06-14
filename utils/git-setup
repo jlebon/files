@@ -8,3 +8,6 @@ fi
 if [ -z "$(git config user.name)" ]; then
 	git config user.name "Jonathan Lebon"
 fi
+
+mkdir -p $HOME/.git_templates
+cp -r dotfiles/.git_templates $HOME
