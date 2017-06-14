@@ -41,6 +41,7 @@ codebases["libvirt_git"] = "/home/yyz/jlebon/codebase/libvirt/libvirt"
 codebases["libvirt"] = "/usr/src/debug/libvirt-1.1.3.9"
 codebases["qemu"] = "/usr/src/debug/qemu-1.6.2"
 codebases["gdb"] = "/home/yyz/jlebon/codebase/binutils-gdb"
+codebases["git"] = "/code/gh/git/git"
 
 target_codebases = set()
 

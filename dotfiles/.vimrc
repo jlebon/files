@@ -60,6 +60,8 @@ set smartcase
 " Remaps kj in Insert Mode to <ESC>
 inoremap kj <Esc>
 inoremap kJ <Esc>
+inoremap KJ <Esc>
+inoremap Kj <Esc>
 
 " Highlight search results
 set hlsearch
@@ -274,6 +276,40 @@ let g:vimwiki_folding = 'expr'
 " disable url shortening
 let g:vimwiki_url_maxsave=0
 let g:vimwiki_list = [{'path': '~/.vimwiki/', 'syntax': 'markdown', 'ext': '.md'}]
+
+" use git to get the list of files, fall back to find
+let g:CommandTFileScanner = 'git'
+
+let g:CommandTAlwaysShowDotFiles = 1
+
+" default, though good to know in case I want to change it
+" controls whether submodules should be scanned
+let g:CommandTGitScanSubmodules = 0
+
+" default, though good to know in case I want to change it
+" controls whether untracked files should be scanned
+let g:CommandTGitIncludeUntracked = 0
+
+" allow changing the IncludeUntracked setting when pressing <C-r> in the prompt
+function! CommandTControlRCallback()
+  let g:CommandTGitIncludeUntracked=!get(g:, 'CommandTGitIncludeUntracked', 0)
+  call commandt#Flush()
+  call commandt#Refresh()
+endfunction
+
+let g:CommandTCustomMappings={
+      \   '<C-r>': ':call CommandTControlRCallback()<cr>'
+      \ }
+
+" find files in vim's current dir instead
+" this is helpful when you cscope away to some lib file, but still want
+" Command-T to only list files from your original project
+let g:CommandTTraverseSCM = 'dir'
+
+" if a file is already open in a buffer, don't switch to the buffer, open the
+" file again in the current buffer
+let g:ctrlp_switch_buffer = 0
+
 
 " It just doesn't make sense to lint C files on a per-file
 " basis. We're gonna run into e.g. include issues and such.
