@@ -259,6 +259,8 @@ nnoremap <silent> <F9> :!cs $(cat ~/.cscope/current)<CR>:cs reset<CR><CR>
 nnoremap <silent> ]q :cn<CR>
 nnoremap <silent> [q :cp<CR>
 
+nnoremap <silent> <F10> :%s/\s\+$//e<CR>
+
 " Disable YAML because it doesn't highlight e.g. XXX, TODO
 " https://github.com/sheerun/vim-polyglot/issues/157
 let g:polyglot_disabled = ['yaml']

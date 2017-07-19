@@ -18,7 +18,7 @@ if [ "$1" == -u ]; then
 fi
 
 if [ $# -eq 0 ]; then
-	modified_files=$(git status --porcelain | \
+	modified_files=$(git status --ignore-submodules --porcelain | \
 	                 grep -E '^ *M ' | \
 	                 awk '{ print $2 }')
 	files="$modified_files"

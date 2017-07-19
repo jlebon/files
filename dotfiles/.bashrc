@@ -18,8 +18,17 @@ HISTFILESIZE=-1
 export VAGRANT_DEFAULT_PROVIDER=libvirt
 export LIBVIRT_DEFAULT_URI=qemu:///system
 
-export EDITOR=vim
-export VISUAL=vim
+# XXX: also check for X11 session for this
+if [ -f /usr/bin/vimx ]; then
+    alias vim='vimx'
+    VIM=vimx
+else
+    VIM=vim
+fi
+
+export EDITOR=$VIM
+export VISUAL=$VIM
+unset VIM
 
 export GOPATH=$HOME/go
 export PATH=$GOPATH/bin:$PATH
@@ -62,6 +71,7 @@ alias venv='source ~/.venv/bin/activate'
 alias venv-py2='source ~/.venv-py2/bin/activate'
 
 alias domlist='virsh list --all'
+alias domstart='virsh start'
 
 # Git aliases
 
