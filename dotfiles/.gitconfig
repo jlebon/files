@@ -18,7 +18,6 @@
 	nuke = reset --hard HEAD^
 	origin = reset --hard origin/master
 	last = log -1 HEAD
-	rewrite = ! git rebase -i $(git merge-base --octopus master origin HEAD)
 	ck = checkout
 	amend = commit --amend
 	amendit = commit --amend --no-edit

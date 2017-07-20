@@ -1,0 +1,24 @@
+#!/bin/bash
+set -euo pipefail
+
+main() {
+    local rev=$(find_merge_base)
+    if [ "$rev" != "" ]; then
+        git rebase -i $rev
+    else # handle rebasing against branch root
+        branch=$(git rev-parse --abbrev-ref HEAD)
+        git rebase -i --root $branch
+    fi
+}
+
+find_merge_base() {
+    for rev in $(git rev-list HEAD); do
+        local num=$(git branch --all --contains ${rev} | wc -l)
+        if [ ${num} -gt 1 ]; then
+            echo $rev
+            break
+        fi
+    done
+}
+
+main "$@"
