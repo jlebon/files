@@ -12,7 +12,7 @@ RUN dnf install -y \
 
 COPY . /files
 
-RUN echo "%wheel All=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+RUN echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
     useradd --groups wheel --uid 1000 jlebon && \
     chown -R jlebon:jlebon /files
 
