@@ -10,13 +10,13 @@ RUN dnf install -y \
 		findutils && \
 	dnf clean all
 
-COPY . /files
-
 RUN echo "%wheel All=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 RUN useradd --groups wheel --uid 1000 jlebon
 
 USER jlebon
+
+COPY . /files
 
 RUN cd /files && \
     utils/git-setup && \
