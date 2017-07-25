@@ -12,7 +12,9 @@ RUN dnf install -y \
 
 COPY . /files
 
+# we install in /usr/local
 RUN echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+    echo "Defaults secure_path = /usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin" >> /etc/sudoers && \
     useradd --groups wheel --uid 1000 jlebon && \
     chown -R jlebon:jlebon /files
 
