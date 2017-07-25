@@ -1,11 +1,9 @@
 # Quick and easy way to get a homey pet container.
 
-FROM fedora:25
+FROM fedora:26
 MAINTAINER Jonathan Lebon <jlebon@redhat.com>
 
-RUN dnf remove -y \
-		vim-minimal && \
-	dnf install -y \
+RUN dnf install -y \
 		vim \
 		git \
 		sudo \
@@ -14,10 +12,14 @@ RUN dnf remove -y \
 
 COPY . /files
 
-# the scripts need to be run from the root of the repo
-WORKDIR /files
+RUN echo "%wheel All=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-RUN utils/git-setup && \
+RUN useradd --groups wheel --uid 1000 jlebon
+
+USER jlebon
+
+RUN cd /files && \
+    utils/git-setup && \
     utils/install-all
 
 CMD ["/bin/bash"]
