@@ -27,11 +27,12 @@ while [ $# -gt 0 ]; do
 		continue
 	fi
 
-	dir=$(dirname $file)
-	base=$(basename $file)
+	# get first parent dir
+	dir=${file%%/*}
+	base=${file#*/}
 
 	target=
-	if [[ $dir == "dotfiles" ]]; then
+	if [[ $dir == dotfiles ]]; then
 		target="$HOME/$base"
 	elif [[ $dir == "bin" ]]; then
 		target="/usr/local/bin/$base"

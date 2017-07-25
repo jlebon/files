@@ -59,12 +59,13 @@ while [ $# -gt 0 ]; do
 		continue
 	fi
 
-	dir=$(dirname $file)
-	base=$(basename $file)
+	# get first parent dir
+	dir=${file%%/*}
+	base=${file#*/}
 
 	sudo=
 	target=
-	if [[ $dir == "dotfiles" ]]; then
+	if [[ $dir == dotfiles ]]; then
 		target="$HOME/$base"
 	elif [[ $dir == "bin" ]]; then
 		target="/usr/local/bin/$base"
@@ -74,13 +75,9 @@ while [ $# -gt 0 ]; do
 		sudo=$SUDO
 	fi
 
-	if [ ! -e "$target" ]; then
-		echo "INFO: Creating empty file \"$target\"."
-		$sudo touch "$target"
+	if [ -e "$target" ]; then
+		cp -d --remove-destination "$target" "$file"
 	fi
-
-	cp -d --remove-destination "$target" "$file"
-
 done
 
 # Workaround for git-diff-index bug which would incorrectly give an error code
@@ -92,20 +89,20 @@ if git diff-index --quiet HEAD; then
 	exit 0
 fi
 
-git stash save "$(date): utils/install backup" > /dev/null
-
 echo "INFO: Saving files in stash@{0}"
+git stash save "$(date): utils/install backup" > /dev/null
 stashed=$(git stash show stash@{0} --name-only)
 
 echo "INFO: Installing files:"
 for file in $stashed; do
 
-	dir=$(dirname $file)
-	base=$(basename $file)
+	# get first parent dir
+	dir=${file%%/*}
+	base=${file#*/}
 
 	sudo=
 	target=
-	if [[ $dir == "dotfiles" ]]; then
+	if [[ $dir == dotfiles ]]; then
 		target="$HOME/$base"
 	elif [[ $dir == "bin" ]]; then
 		target="/usr/local/bin/$base"

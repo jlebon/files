@@ -28,11 +28,12 @@ while [ $# -gt 0 ]; do
 		continue
 	fi
 
-	dir=$(dirname $file)
-	base=$(basename $file)
+	# get first parent dir
+	dir=${file%%/*}
+	base=${file#*/}
 
 	target=
-	if [[ $dir == "dotfiles" ]]; then
+	if [[ $dir == dotfiles ]]; then
 		target="$HOME/$base"
 	elif [[ $dir == "bin" ]]; then
 		target="/usr/local/bin/$base"
@@ -47,7 +48,7 @@ while [ $# -gt 0 ]; do
 
 	if [[ $0 == "utils/diff" ]]; then
 		git diff --color --no-index "$target" "$file" || :
-	else
+	else # rdiff
 		git diff --color --no-index "$file" "$target" || :
 	fi
 
