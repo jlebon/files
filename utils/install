@@ -75,9 +75,16 @@ while [ $# -gt 0 ]; do
 		sudo=$SUDO
 	fi
 
-	if [ -e "$target" ]; then
-		cp -d --remove-destination "$target" "$file"
+	# touch an empty file so that we stash it
+	# XXX: no longer do it this way
+	if [ ! -e "$target" ]; then
+		echo "INFO: Creating empty file \"$target\"."
+		$sudo mkdir -p $(dirname ${target})
+		$sudo touch "$target"
 	fi
+
+	cp -d --remove-destination "$target" "$file"
+
 done
 
 # Workaround for git-diff-index bug which would incorrectly give an error code
