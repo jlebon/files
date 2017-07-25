@@ -11,6 +11,7 @@ prog=$(basename $0)
 
 LAST="$HOME/.cache/grepx.last"
 QUICKLIST="$HOME/.cache/grepxi.quicklist"
+mkdir -p "$HOME/.cache"
 
 if [ "$prog" == "grepx" ]; then
 	grep -Inr "$@" > $LAST

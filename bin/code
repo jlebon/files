@@ -7,9 +7,10 @@ if [ $# -ne 1 ] && [ $# -ne 2 ] && [ $# -ne 3 ]; then
 	exit 1
 fi
 
-CACHE_TXT="/tmp/.code.cache.txt"
-CACHE_MD5="/tmp/.code.cache.md5sum"
-LAST_BASE="/tmp/.code.last"
+CACHE_TXT="$HOME/.cache/.code.cache.txt"
+CACHE_MD5="$HOME/.cache/.code.cache.md5sum"
+LAST_BASE="$HOME/.cache/.code.last"
+mkdir -p "$HOME/.cache"
 
 codebase=$1; shift
 filter=
