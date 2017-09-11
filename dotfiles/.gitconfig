@@ -50,6 +50,8 @@
 	odiff = diff origin/master
 	udiff = diff upstream/master
 	get-pr = "!f() { set -e; pr=$1; shift; git fetch upstream pull/$pr/merge \"$@\" || git fetch upstream pull/$pr/head; git checkout FETCH_HEAD; }; f"
+	#gh-pr-branch-get = "!f() { set -e; author=$1; shift; branch=$1; shift; git fetch https://github.com/$author/ }; f"
+	subu = submodule update
 [pull]
 	rebase = preserve
 [push]
@@ -57,7 +59,7 @@
 [diff]
 	algorithm = patience
 	renames = copies
-	compactionHeuristic = true
+	indentHeuristic = true
 [include]
 	path = .gitconfig.local
 [commit]

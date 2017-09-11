@@ -1,3 +1,3 @@
 set history save
-shell mkdir ~/.cache
+shell mkdir -p ~/.cache
 set history filename ~/.cache/gdb_history
