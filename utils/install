@@ -68,11 +68,9 @@ while [ $# -gt 0 ]; do
 	if [[ $dir == dotfiles ]]; then
 		target="$HOME/$base"
 	elif [[ $dir == "bin" ]]; then
-		target="/usr/local/bin/$base"
-		sudo=$SUDO
+		target="$HOME/.local/bin/$base"
 	elif [[ $dir == "complete" ]]; then
-		target="/etc/bash_completion.d/$base"
-		sudo=$SUDO
+		target="$HOME/.bash_completion.d/$base"
 	fi
 
 	# touch an empty file so that we stash it
@@ -112,11 +110,9 @@ for file in $stashed; do
 	if [[ $dir == dotfiles ]]; then
 		target="$HOME/$base"
 	elif [[ $dir == "bin" ]]; then
-		target="/usr/local/bin/$base"
-		sudo=$SUDO
+		target="$HOME/.local/bin/$base"
 	elif [[ $dir == "complete" ]]; then
-		target="/etc/bash_completion.d/$base"
-		sudo=$SUDO
+		target="$HOME/.bash_completion.d/$base"
 	fi
 
 	$sudo cp -d --remove-destination "$file" "$target"
