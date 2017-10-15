@@ -58,4 +58,11 @@ done
 
 cd -
 
-vim $canonfiles
+if [ -f /usr/bin/vimx ]; then
+    alias vim='vimx'
+    VIM=vimx
+else
+    VIM=vim
+fi
+
+$VIM $canonfiles

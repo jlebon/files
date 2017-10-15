@@ -7,6 +7,9 @@ _dom_listing() {
 		if [ $1 == domssh ]; then
 			# only give running VMs as options
 			opts=$(virsh list --name)
+		elif [ $1 == domstart ]; then
+			# only give turned off VMs as options
+			opts=$(virsh list --inactive --name)
 		else
 			opts=$(virsh list --all --name)
 		fi
@@ -21,3 +24,4 @@ _dom_listing() {
 }
 complete -F _dom_listing domnuke
 complete -F _dom_listing domssh
+complete -F _dom_listing domstart

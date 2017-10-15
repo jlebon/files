@@ -31,6 +31,7 @@ while [ $# -ne 0 ]; do
     pkg=$1; shift
     rpm --dbpath "$dbpath" -q "$pkg" || continue
     while IFS='' read -r cap || [[ -n $cap ]]; do
+        cap=${cap% = *}
         if rpm --dbpath "$dbpath" --quiet -q --$base "$cap"; then
             while IFS='' read -r pkgreq || [[ -n $pkgreq ]]; do
                 capreqs="$capreqs\n$cap: $pkgreq"

@@ -82,6 +82,9 @@ main_output ()
 			brg=$(get_domain_bridge $domain)
 			ip=$(get_field_from_mac_and_brg $mac $brg ip-address)
 			hostname=$(get_field_from_mac_and_brg $mac $brg hostname)
+			if [[ $hostname == $domain ]]; then
+				hostname="<same>"
+			fi
 		fi
 		echo "$id $domain ${hostname:-<N/A>} ${mac:-<N/A>} ${ip:-<N/A>}"
 		#if [ -n "$ip" ]; then

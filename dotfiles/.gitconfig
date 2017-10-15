@@ -3,6 +3,10 @@
 	# We use always here instead of auto because otherwise
 	# we don't get any coloring with Ggrep in vim.
 	grep = always
+[color "grep"]
+	linenumber = green
+	match = red bold
+	filename = magenta
 [merge]
 	conflictstyle=diff3
 	tool = meld
@@ -11,7 +15,7 @@
 	email = jlebon@redhat.com
 	signingkey = 519CE313
 [core]
-	editor = /usr/bin/vim
+	editor = /usr/bin/vimx
 [alias]
 	cam = commit -am
 	scrap = reset --hard HEAD
@@ -43,7 +47,7 @@
 
 	pr = "!f() { set -e; pr=$1; shift; git push origin HEAD:refs/heads/pr/$pr \"$@\"; }; f"
 	prb = "!f() { set -e; pr=$(git rev-parse --abbrev-ref HEAD); git pr $pr \"$@\"; }; f"
-	prd = "!f() { set -e; b=$1; shift; git push origin :pr/$b; git branch -D $b; }; f"
+	prd = "!f() { set -e; while [ $# -ne 0 ]; do b=$1; shift; git push origin :pr/$b; git branch -D $b; done;}; f"
 
 	restamp = "! git commit --amend --no-edit --date=\"$(date -R)\""
 
@@ -60,6 +64,7 @@
 	algorithm = patience
 	renames = copies
 	indentHeuristic = true
+	compactionHeuristic = true
 [include]
 	path = .gitconfig.local
 [commit]

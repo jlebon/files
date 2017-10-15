@@ -34,7 +34,12 @@ else
 	outputiso=$1; shift
 fi
 
-genisoimage \
+SUDO=
+if [ $UID != 0 ] && ! touch $(dirname $outputiso) &>/dev/null; then
+    SUDO=sudo
+fi
+
+$SUDO genisoimage \
 	-input-charset default \
 	-output "$outputiso" \
 	-volid cidata \

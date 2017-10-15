@@ -37,17 +37,22 @@ echo -n "Creating domain $dom (${ram}M RAM and $ncpu $CPU)... "
 # create the new image
 newimg="/var/lib/libvirt/images/$dom.qcow2"
 
-qemu-img create -q -f qcow2 -o backing_file="$srcimg" "$newimg"
+SUDO=
+if [ $UID != 0 ]; then
+    SUDO=sudo
+fi
+
+$SUDO qemu-img create -q -f qcow2 -o backing_file="$srcimg" "$newimg"
 
 # create the new domain
 if [ -n "$cidata" ] && [ "$cidata" != "none" ]; then
-	virt-install --quiet --import --name="$dom" \
+	$SUDO virt-install --quiet --import --name="$dom" \
 		--os-variant=rhel7 --ram="$ram" --vcpus="$ncpu" \
 		--disk path="$newimg",format=qcow2,bus=virtio \
 		--disk path="$cidata",device=cdrom,readonly=on \
 		--network network=default --noautoconsole
 else
-	virt-install --quiet --import --name="$dom" \
+	$SUDO virt-install --quiet --import --name="$dom" \
 		--os-variant=rhel7 --ram="$ram" --vcpus="$ncpu" \
 		--disk path="$newimg",format=qcow2,bus=virtio \
 		--network network=default --noautoconsole

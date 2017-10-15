@@ -13,9 +13,14 @@ LAST="$HOME/.cache/grepx.last"
 QUICKLIST="$HOME/.cache/grepxi.quicklist"
 mkdir -p "$HOME/.cache"
 
-if [ "$prog" == "grepx" ]; then
-	grep -Inr "$@" > $LAST
-	grep -Inr --color=always "$@" | nl --number-width=1 | less -RFX
+if [ "$prog" == "grepx" ] || [ "$prog" == "gitgrepx" ]; then
+	if [ "$prog" == "gitgrepx" ]; then
+		grepper="git grep -I --color=never"
+	else
+		grepper="grep -Inr --color=never --exclude-dir=.git"
+	fi
+	$grepper "$@" > $LAST
+	$grepper --color=always "$@" | nl --number-width=1 | less -RFX
 else
 	if [ ! -f "$LAST" ]; then
 		echo "You must run grepx first."

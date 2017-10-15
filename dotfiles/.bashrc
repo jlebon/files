@@ -62,9 +62,8 @@ alias t='tmux'
 alias ta='tmux attach'
 
 alias g='grepx'
+alias gg='gitgrepx'
 alias gi='grepxi'
-alias gg='grepx --exclude-dir=.git'
-alias ggc='grepx --exclude-dir=.git "--exclude=*.Po" "--exclude=*.Plo"'
 
 alias venv='source ~/.venv/bin/activate'
 alias venv-py2='source ~/.venv-py2/bin/activate'
@@ -137,37 +136,49 @@ if [ -e /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
 	source /usr/share/git-core/contrib/completion/git-prompt.sh
 fi
 
+# calculate it once since it's not likely to change in one session
+__home_realpath=$(realpath $HOME)
+
 function stdprompt_dir() { # $1 = dir, $2 = git root
+
+	local pwd_realpath
+	pwd_realpath=$(realpath $PWD)
 
 	# Get the real path to the repo's root
 	local repo_realpath
-	if rpm -q git &>/dev/null; then
+	if [ -x /bin/git ]; then
 		repo_realpath=$(git rev-parse --show-toplevel 2> /dev/null)
 	fi
 
+	# A tricky bit on atomic-ws here is that the default dir when starting bash
+	# is not $HOME (which is /home/jlebon), but `realpath $HOME`, which is
+	# /var/home/jlebon.  So we need to be able to translate both $HOME and
+	# $(realpath $HOME) into ~.
+
 	# Get the current dir, but abbreviate homedir if present
-	local pwd=$PWD
-	if [[ $(realpath $PWD) == $(realpath $HOME) ]]; then
+	local pwd=$PWD # default to $PWD
+	if [[ $pwd_realpath == $__home_realpath ]]; then
 		pwd='~'
+	# handle /home/jlebon subdir
 	elif [[ $PWD == $HOME/* ]]; then
 		pwd='~'${pwd:${#HOME}}
+	# handle /var/home/jlebon subdir
+	elif [[ $PWD == $__home_realpath/* ]]; then
+		pwd='~'${PWD:${#__home_realpath}}
 	fi
 
 	# Are we even in a repo?
 	if [[ -n "$repo_realpath" ]]; then
 
-		# OK, get the real path to the current dir
-		local cur_realpath=$(realpath .)
-
 		# Calculate how deep we are in the repo
-		local diff=$((${#cur_realpath} - ${#repo_realpath}))
+		local diff=$((${#pwd_realpath} - ${#repo_realpath}))
 
 		# Get the name of the repo (we use pwd instead of repo_realpath in
 		# case the repo name is itself a symlink)
-		local repo_name=$(basename ${pwd:0:$((${#pwd} - $diff))})
+		local repo_name=$(basename ${pwd::$((${#pwd} - $diff))})
 
 		# Calculate the paths before and after the repo name
-		local head=${pwd:0:$((${#pwd} - $diff - ${#repo_name}))}
+		local head=${pwd::$((${#pwd} - $diff - ${#repo_name}))}
 		if [ $diff -gt 0 ]; then
 			local tail=${pwd:$((-$diff))}
 		fi
@@ -182,7 +193,7 @@ function stdprompt_dir() { # $1 = dir, $2 = git root
 		echo -n "$tail"
 	else
 		echo -n "\[\033[0;${1}m\]"
-		echo -n "\w"
+		echo -n "$pwd"
 	fi
 
 	echo -n "\[\033[0m\]"
@@ -198,8 +209,12 @@ function stdprompt() {
 
 	local rc=$?
 
-	# print hostname
-	echo -n "["
+	# XXX: need to make this conditional based on docker
+	if [ -f /run/ostree-booted ]; then
+		echo -n "["
+	else
+		echo -n "{"
+	fi
 
 	# if this becomes too annoying, we could instead:
 	# - rely on bash history timestamps
@@ -208,6 +223,7 @@ function stdprompt() {
 
 	#echo -n " "
 
+	# print hostname
 	# blue for normal, red for root
 	if [ $UID -ne 0 ]; then
 		stdprompt_hostname 34
@@ -226,7 +242,11 @@ function stdprompt() {
 		stdprompt_gitbranch 35
 	fi
 
-	echo -n "]"
+	if [ -f /run/ostree-booted ]; then
+		echo -n "]"
+	else
+		echo -n "}"
+	fi
 
 	if [ -n "${PS1_MARKER:-}" ]; then
 		echo -n " <$PS1_MARKER>"
@@ -255,6 +275,11 @@ function mark_prompt {
 # This is better than git rev-parse --show-toplevel because
 # it keeps symlinks.
 function git_root {
+
+    if [ ! -x /bin/git ]; then
+        echo "Error: git not installed!" >&2
+        return
+    fi
 
     # Get the real path to the repo's root
     local repo_realpath=$(git rev-parse --show-toplevel 2> /dev/null)
@@ -326,7 +351,13 @@ function cdtemp() {
     fi
 }
 
+# source user-defined completions
+if [ -f ~/.bash_completion ]; then
+    source ~/.bash_completion
+fi
+
 # source any local mods
 if [ -f ~/.bashrc.local ]; then
 	source ~/.bashrc.local
 fi
+
