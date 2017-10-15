@@ -40,12 +40,6 @@ if ! git diff-index --quiet HEAD; then
 	exit 1
 fi
 
-if [ $UID == 0 ]; then
-	SUDO=
-else
-	SUDO=sudo
-fi
-
 while [ $# -gt 0 ]; do
 
 	file=$1; shift
@@ -63,7 +57,6 @@ while [ $# -gt 0 ]; do
 	dir=${file%%/*}
 	base=${file#*/}
 
-	sudo=
 	target=
 	if [[ $dir == dotfiles ]]; then
 		target="$HOME/$base"
@@ -77,8 +70,8 @@ while [ $# -gt 0 ]; do
 	# XXX: no longer do it this way
 	if [ ! -e "$target" ]; then
 		echo "INFO: Creating empty file \"$target\"."
-		$sudo mkdir -p $(dirname ${target})
-		$sudo touch "$target"
+		mkdir -p $(dirname ${target})
+		touch "$target"
 	fi
 
 	cp -d --remove-destination "$target" "$file"
@@ -105,7 +98,6 @@ for file in $stashed; do
 	dir=${file%%/*}
 	base=${file#*/}
 
-	sudo=
 	target=
 	if [[ $dir == dotfiles ]]; then
 		target="$HOME/$base"
@@ -115,7 +107,7 @@ for file in $stashed; do
 		target="$HOME/.bash_completion.d/$base"
 	fi
 
-	$sudo cp -d --remove-destination "$file" "$target"
+	cp -d --remove-destination "$file" "$target"
 
 	echo -e "\t$target"
 done
