@@ -36,7 +36,7 @@ while [ $# -gt 0 ]; do
 	if [[ $dir == dotfiles ]]; then
 		target="$HOME/$base"
 	elif [[ $dir == "bin" ]]; then
-		target="/usr/local/bin/$base"
+		target="$HOME/.local/bin/$base"
 	elif [[ $dir == "complete" ]]; then
 		target="$HOME/.bash_completion.d/$base"
 	fi

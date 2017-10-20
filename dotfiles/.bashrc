@@ -298,7 +298,7 @@ alias gitr='cd $(git_root)'
 
 # we need this little wrapper so that we can change dir in the current shell
 function code() {
-	dir=$(/usr/local/bin/code "$@")
+	dir=$(command code "$@")
 	if [ $? -ne 0 ] || [ ! -d "$dir" ]; then
 		echo "$dir"
 		return 1
