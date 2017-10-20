@@ -52,5 +52,9 @@ else
 		vim_args="$vim_args -c cw"
 	fi
 
-	eval vim $vim_args
+	VIM=vim
+	if [ -x /usr/bin/vimx ]; then
+		VIM=vimx
+	fi
+	$VIM $vim_args
 fi
