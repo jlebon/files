@@ -205,12 +205,17 @@ function stdprompt_gitbranch() { # $1 = color
 	echo -n "\[\033[0m\]"
 }
 
+# calculate it once since it's not likely to change in one session
+__in_dockerenv=no
+if [ -f /.dockerenv ]; then
+	__in_dockerenv=yes
+fi
+
 function stdprompt() {
 
 	local rc=$?
 
-	# XXX: need to make this conditional based on docker
-	if [ -f /run/ostree-booted ]; then
+	if [[ $__in_dockerenv == no ]]; then
 		echo -n "["
 	else
 		echo -n "{"
@@ -242,7 +247,7 @@ function stdprompt() {
 		stdprompt_gitbranch 35
 	fi
 
-	if [ -f /run/ostree-booted ]; then
+	if [[ $__in_dockerenv == no ]]; then
 		echo -n "]"
 	else
 		echo -n "}"
