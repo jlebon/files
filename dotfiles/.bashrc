@@ -12,8 +12,10 @@ shopt -s direxpand
 HISTTIMEFORMAT="[%F %T] "
 
 # Infinite history
-HISTSIZE=-1
-HISTFILESIZE=-1
+# NB: on newer bash, anything < 0 is the supported way, but on CentOS/RHEL
+# at least, only this works
+HISTSIZE=
+HISTFILESIZE=
 
 export VAGRANT_DEFAULT_PROVIDER=libvirt
 export LIBVIRT_DEFAULT_URI=qemu:///system
