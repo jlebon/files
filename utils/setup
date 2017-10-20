@@ -17,6 +17,19 @@ if [[ "$(realpath $PWD)" != \
 	return
 fi
 
+__SUDO=env # no op
+if [ $UID -ne 0 ]; then
+    # assume sudo is installed
+    __SUDO=sudo
+fi
+
+for pkg in vim-enhanced git sudo findutils; do
+	if ! rpm -q $pkg &>/dev/null; then
+		echo $pkg
+	fi
+done | xargs -r $__SUDO yum install -y
+unset __SUDO
+
 utils/git-setup
 [ $? -eq 0 ] || return
 

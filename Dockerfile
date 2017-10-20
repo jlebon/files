@@ -3,13 +3,6 @@
 FROM fedora:26
 MAINTAINER Jonathan Lebon <jlebon@redhat.com>
 
-RUN dnf install -y \
-		vim \
-		git \
-		sudo \
-		findutils && \
-	dnf clean all
-
 COPY . /files
 
 # we install in /usr/local
@@ -19,9 +12,7 @@ RUN echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
 
 USER jlebon
 
-RUN cd /files && \
-    utils/git-setup && \
-    utils/install-all
+RUN cd /files && source utils/setup
 
 CMD ["/bin/bash"]
 
