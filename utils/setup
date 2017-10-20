@@ -28,6 +28,7 @@ for pkg in vim-enhanced git sudo findutils; do
 		echo $pkg
 	fi
 done | xargs -r $__SUDO yum install -y
+[ $? -eq 0 ] || return
 unset __SUDO
 
 utils/git-setup
