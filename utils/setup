@@ -23,7 +23,7 @@ if [ $UID -ne 0 ]; then
     __SUDO=sudo
 fi
 
-for pkg in vim-enhanced git sudo findutils; do
+for pkg in vim-enhanced git sudo findutils tree; do
 	if ! rpm -q $pkg &>/dev/null; then
 		echo $pkg
 	fi
