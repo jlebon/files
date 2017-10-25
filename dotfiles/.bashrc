@@ -21,11 +21,13 @@ export VAGRANT_DEFAULT_PROVIDER=libvirt
 export LIBVIRT_DEFAULT_URI=qemu:///system
 
 # XXX: also check for X11 session for this
-if [ -f /usr/bin/vimx ]; then
+if [ -x /usr/bin/vimx ]; then
     alias vim='vimx'
     VIM=vimx
-else
+elif [ -x /usr/bin/vim ]; then
     VIM=vim
+else
+    VIM=vi
 fi
 
 export EDITOR=$VIM

@@ -14,8 +14,6 @@
 	name = Jonathan Lebon
 	email = jlebon@redhat.com
 	signingkey = 519CE313
-[core]
-	editor = /usr/bin/vimx
 [alias]
 	cam = commit -am
 	scrap = reset --hard HEAD
