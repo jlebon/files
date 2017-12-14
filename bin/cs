@@ -101,7 +101,7 @@ def build_cscope_files():
       paths.append(codebases[target_codebase])
 
    # XXX: make cleaner
-   os.system("find %s -type f -a \( -name '*.c' -o -name '*.h' -o -name '*.cxx' \) \
+   os.system("find %s -type f -a \( -name '*.c' -o -name '*.cpp' -o -name '*.h' -o -name '*.cxx' \) \
                > cscope.files" % ' '.join(paths))
    os.system("cscope -b -q")
 

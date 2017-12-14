@@ -281,6 +281,7 @@ let g:vimwiki_list = [{'path': '~/.vimwiki/', 'syntax': 'markdown', 'ext': '.md'
 
 " use git to get the list of files, fall back to find
 let g:CommandTFileScanner = 'git'
+let g:CommandTMaxFiles=400000
 
 let g:CommandTAlwaysShowDotFiles = 1
 
