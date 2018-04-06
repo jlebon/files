@@ -31,9 +31,6 @@ set tabstop=4
 "set cindent
 "set cinoptions=(0,u0,U0
 
-" Set grep options
-set grepprg=grep\ -Inr\ --exclude-dir=.git
-
 " Allow changing tabbing using F6 & F7
 
 function! ChangeTabbing(newtab)
@@ -57,7 +54,7 @@ autocmd BufRead,BufNewFile *.yaml,*.yml silent! :call ChangeTabbing(2)
 set ignorecase
 set smartcase
 
-" Remaps kj in Insert Mode to <ESC>
+" Remaps kj/jk combinations in Insert Mode to <ESC>
 inoremap kj <Esc>
 inoremap kJ <Esc>
 inoremap KJ <Esc>
@@ -98,12 +95,6 @@ set number " Shows absolute line number at cursor pos
 set relativenumber " Shows relative line number elsewhere
 highlight LineNr ctermfg=black ctermbg=grey
 
-" Necessary for the MiniBufExplorer extension, which shows
-" line numbers if 'number' and 'relativenumber' are on.
-" I've filed an issue with them (issue 102 on GitHub)
-"noremap <F6> :MBEFocus<CR>:set<Space>nonumber<CR>:set<Space>norelativenumber<CR><C-W>j
-let g:miniBufExplStatusLineText = "---"
-
 " Characters to use when :set list is turned on to display hidden chars
 set listchars=tab:>-,trail:~,extends:>,precedes:<
 
@@ -115,9 +106,6 @@ nnoremap <F2> :set list!<CR>:set list?<CR>
 
 " Keep cursor within 3 lines of top or bottom line when scrolling
 set scrolloff=3
-
-" Exclude selected char in selections
-"set selection=exclusive
 
 " Show visual mode selection with green background
 highlight Visual ctermbg=Green
@@ -145,6 +133,8 @@ function! ChangeTextWidth()
    if &textwidth == 0
       set textwidth=60
    elseif &textwidth == 60
+      set textwidth=72
+   elseif &textwidth == 72
       set textwidth=80
    elseif &textwidth == 80
       set textwidth=92
@@ -221,12 +211,10 @@ set writebackup
 " Create dirs if they don't already exist
 silent !mkdir -p $HOME/.vim/{undo,backup,swap} > /dev/null 2>&1
 
-" Make text 60 chars wide for weekly report and markdown
+" Make text 60 chars wide for reports and markdown
 autocmd BufRead,BufNewFile *.rpt set textwidth=60
 autocmd BufRead,BufNewFile *.md set textwidth=60
 autocmd BufRead,BufNewFile *.doc set textwidth=72
-
-autocmd BufReadPost fugitive://* set bufhidden=delete
 
 " For compabitily with tmux's xterm-style keys
 if &term =~ '^screen'
@@ -255,76 +243,171 @@ set splitbelow
 " Rebuild cscope database with F9
 nnoremap <silent> <F9> :!cs $(cat ~/.cscope/current)<CR>:cs reset<CR><CR>
 
-" Easy quickfix navigation
-nnoremap <silent> ]q :cn<CR>
-nnoremap <silent> [q :cp<CR>
+command! Cnext try | cnext | catch | cfirst | endtry
+command! Cprev try | cprev | catch | clast | endtry
 
+" Easy quickfix navigation
+nnoremap <silent> ]q :Cnext<CR>
+nnoremap <silent> [q :Cprev<CR>
+
+" Same for tags
+nnoremap <silent> ]t :tn<CR>
+nnoremap <silent> [t :tp<CR>
+
+command! Lnext try | lnext | catch | lfirst | endtry
+command! Lprev try | lprev | catch | llast | endtry
+
+" And for locations
+nnoremap <silent> ]e :Lnext<CR>
+nnoremap <silent> [e :Lprev<CR>
+
+" Keep going up dirs looking for a tags file
+set tags+=tags;$HOME
+
+" Trim trailing spaces in whole document
 nnoremap <silent> <F10> :%s/\s\+$//e<CR>
 
-" Disable YAML because it doesn't highlight e.g. XXX, TODO
-" https://github.com/sheerun/vim-polyglot/issues/157
-let g:polyglot_disabled = ['yaml']
+" The default is "menu,preview", which will open up a
+" preview window with extra info when auto-completing in
+" insert mode. The annoyance is that it doesn't auto-close,
+" and the dropdown menu already has all the info we want
+" anyway.
+set completeopt=menu
 
-" Don't lint when changing the text (it will then only lint
-" when we open the file and when we save it).
-let g:ale_lint_on_text_changed = 0
-
-" Only report actual errors
-let g:ale_python_pylint_options = '-E'
-let g:ale_yaml_yamllint_options = '-d relaxed'
-
-let g:vimwiki_folding = 'expr'
-
-" disable url shortening
-let g:vimwiki_url_maxsave=0
-let g:vimwiki_list = [{'path': '~/.vimwiki/', 'syntax': 'markdown', 'ext': '.md'}]
-
-" use git to get the list of files, fall back to find
-let g:CommandTFileScanner = 'git'
-let g:CommandTMaxFiles=400000
-
-let g:CommandTAlwaysShowDotFiles = 1
-
-" default, though good to know in case I want to change it
-" controls whether submodules should be scanned
-let g:CommandTGitScanSubmodules = 0
-
-" default, though good to know in case I want to change it
-" controls whether untracked files should be scanned
-let g:CommandTGitIncludeUntracked = 0
-
-" allow changing the IncludeUntracked setting when pressing <C-r> in the prompt
-function! CommandTControlRCallback()
-  let g:CommandTGitIncludeUntracked=!get(g:, 'CommandTGitIncludeUntracked', 0)
-  call commandt#Flush()
-  call commandt#Refresh()
+function! SetGrepPrg()
+    let l:bufdir = expand('%:p:h')
+    let l:gitroot = system("git -C " . l:bufdir . " rev-parse --show-toplevel")
+    if v:shell_error
+        " still use --exclude-dir; it might've failed because we don't even
+        " have git
+        let &grepprg = "grep -nr --color=never --exclude-dir=.git $* " . l:bufdir
+    else
+        " XXX: need to set this somewhere else, because the grepprg is already
+        " set by then... when opening the buffer maybe?
+        " XXX: use word separation
+        " XXX: add mapping
+        let &grepprg = "git grep -n --color=never $* -- " . gitroot
+    endif
 endfunction
 
-let g:CommandTCustomMappings={
-      \   '<C-r>': ':call CommandTControlRCallback()<cr>'
-      \ }
+autocmd BufRead,BufNewFile * call SetGrepPrg()
 
-" find files in vim's current dir instead
-" this is helpful when you cscope away to some lib file, but still want
-" Command-T to only list files from your original project
-let g:CommandTTraverseSCM = 'dir'
+nnoremap <silent> gr :silent grep! '\b<cword>\b'<CR>:cw<CR>:redraw!<CR>
 
-" if a file is already open in a buffer, don't switch to the buffer, open the
-" file again in the current buffer
-let g:ctrlp_switch_buffer = 0
-
-
-" It just doesn't make sense to lint C files on a per-file
-" basis. We're gonna run into e.g. include issues and such.
-" XXX: check if we can add a new linter that just compiles
-" the project and reports errors.
-let g:ale_linters = {'c': [], 'cpp': []}
-
+" Now plugin configurations
 if filereadable(expand("~/.vim/autoload/pathogen.vim"))
-   execute pathogen#infect()
-   execute pathogen#helptags()
-endif
 
-set runtimepath^=~/.vim/bundle/ctrlp.vim
-let g:ctrlp_cmd = 'CtrlPBuffer'
-let g:ctrlp_match_current_file = 1
+    execute pathogen#infect()
+    execute pathogen#helptags()
+
+    " EXTENSION: https://github.com/sheerun/vim-polyglot
+    if isdirectory(expand("~/.vim/bundle/vim-polyglot"))
+
+        " Disable YAML because it doesn't highlight e.g. XXX, TODO
+        " https://github.com/sheerun/vim-polyglot/issues/157
+        let g:polyglot_disabled = ['yaml']
+
+    endif
+
+    " EXTENSION: https://github.com/vimwiki/vimwiki
+    if isdirectory(expand("~/.vim/bundle/vimwiki"))
+
+        let g:vimwiki_folding = 'expr'
+
+        " disable url shortening
+        let g:vimwiki_url_maxsave=0
+        let g:vimwiki_list = [{'path': '~/.vimwiki/', 'syntax': 'markdown', 'ext': '.md'}]
+
+    endif
+
+    " EXTENSION: https://github.com/ctrlpvim/ctrlp.vim
+    if isdirectory(expand("~/.vim/bundle/ctrlp.vim"))
+
+        " if a file is already open in a buffer, don't switch to the buffer, open the
+        " file again in the current buffer
+        let g:ctrlp_switch_buffer = 0
+
+        " default to find buffer mode instead of file
+        let g:ctrlp_cmd = 'CtrlPBuffer'
+
+        " include current file in matches
+        let g:ctrlp_match_current_file = 1
+
+    endif
+
+    " EXTENSION: https://github.com/ludovicchabant/vim-gutentags
+    if isdirectory(expand("~/.vim/bundle/vim-gutentags"))
+
+        " Only regen tags for files tracked by git
+        let g:gutentags_file_list_command = 'git ls-files'
+
+        " Be able to tell when Gutentags is regenerating tags
+        set statusline+=%{gutentags#statusline('[',']')}
+
+        " But force a status line refresh otherwise it won't go away
+        augroup RefreshStatusLine
+            autocmd!
+            autocmd User GutentagsUpdating redrawstatus!
+            autocmd User GutentagsUpdated redrawstatus!
+        augroup END
+
+    endif
+
+    " EXTENSION: https://github.com/wincent/command-t
+    if isdirectory(expand("~/.vim/bundle/command-t"))
+
+        " use git to get the list of files, fall back to find
+        let g:CommandTFileScanner = 'git'
+        let g:CommandTMaxFiles=400000
+
+        let g:CommandTAlwaysShowDotFiles = 1
+
+        " default, though good to know in case I want to change it
+        " controls whether submodules should be scanned
+        let g:CommandTGitScanSubmodules = 0
+
+        " default, though good to know in case I want to change it
+        " controls whether untracked files should be scanned
+        let g:CommandTGitIncludeUntracked = 0
+
+        " find files in vim's current dir instead
+        " this is helpful when you cscope away to some lib file, but still want
+        " Command-T to only list files from your original project
+        let g:CommandTTraverseSCM = 'dir'
+
+        " allow changing the IncludeUntracked setting when pressing <C-r> in the prompt
+        " but needs custom patch applied: https://github.com/wincent/command-t/issues/290
+        function! CommandTControlRCallback()
+          let g:CommandTGitIncludeUntracked=!get(g:, 'CommandTGitIncludeUntracked', 0)
+          call commandt#Flush()
+          call commandt#Refresh()
+        endfunction
+
+        let g:CommandTCustomMappings={
+              \   '<C-r>': ':call CommandTControlRCallback()<cr>'
+              \ }
+
+    endif
+
+    " EXTENSION: https://github.com/w0rp/ale
+    if isdirectory(expand("~/.vim/bundle/ale"))
+
+        " Don't lint when changing the text (it will then only lint
+        " when we open the file and when we save it).
+        let g:ale_lint_on_text_changed = 0
+        let g:ale_lint_on_enter = 1 " default
+        let g:ale_lint_on_save = 1 " default
+
+        " Only report actual errors
+        let g:ale_python_pylint_options = '-E'
+        let g:ale_yaml_yamllint_options = '-d relaxed'
+
+        " A horrendously hacky linter that uses `make -n`, but it works!
+        " There's a `g:ale_c_parse_makefile` intended for e.g. clang/gcc, but
+        " it doesn't use the command verbatim, only for extracting flags. This
+        " fails for e.g. libtool commands.
+        let g:ale_linters = {'c': ['maken']}
+        let g:ale_c_parse_makefile = 1 " needed for our hack
+
+    endif
+endif
