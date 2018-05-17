@@ -23,11 +23,15 @@ if [ $UID -ne 0 ]; then
     __SUDO=sudo
 fi
 
-for pkg in vim-enhanced git sudo findutils tree; do
-	if ! rpm -q $pkg &>/dev/null; then
-		echo $pkg
-	fi
-done | xargs -r $__SUDO yum install -y
+# can't use xargs
+pkgs=$(for pkg in vim-enhanced git sudo findutils tree; do
+        if ! rpm -q $pkg &>/dev/null; then
+            echo $pkg
+        fi
+       done)
+if [ -n "${pkgs}" ]; then
+    $__SUDO yum install -y ${pkgs}
+fi
 [ $? -eq 0 ] || return
 unset __SUDO
 
