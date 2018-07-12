@@ -1,6 +1,6 @@
 # Quick and easy way to get a homey pet container.
-FROM registry.fedoraproject.org/fedora:27
-MAINTAINER Jonathan Lebon <jlebon@redhat.com>
+FROM registry.fedoraproject.org/fedora:28
+MAINTAINER Jonathan Lebon <jonathan@jlebon.com>
 
 COPY . /files
 
