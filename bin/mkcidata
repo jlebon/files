@@ -26,6 +26,9 @@ user: cloud-user
 password: atomic
 chpasswd: {expire: False}
 ssh_pwauth: True
+disable_root: False
+ssh_authorized_keys:
+    - $(cat ~/.ssh/id_rsa.pub)
 EOF
 
 	trap "rm -rf $dir" EXIT
