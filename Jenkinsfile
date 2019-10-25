@@ -1,0 +1,3 @@
+node {
+    println("Hello world!")
+}
