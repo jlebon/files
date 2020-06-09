@@ -210,16 +210,16 @@ function stdprompt_gitbranch() { # $1 = color
 }
 
 # calculate it once since it's not likely to change in one session
-__in_dockerenv=no
-if [ -f /.dockerenv ]; then
-	__in_dockerenv=yes
+__in_containerenv=no
+if [ -f /.dockerenv ] || [ -f /run/.containerenv ]; then
+	__in_containerenv=yes
 fi
 
 function stdprompt() {
 
 	local rc=$?
 
-	if [[ $__in_dockerenv == no ]]; then
+	if [[ $__in_containerenv == no ]]; then
 		echo -n "["
 	else
 		echo -n "{"
@@ -251,7 +251,7 @@ function stdprompt() {
 		stdprompt_gitbranch 35
 	fi
 
-	if [[ $__in_dockerenv == no ]]; then
+	if [[ $__in_containerenv == no ]]; then
 		echo -n "]"
 	else
 		echo -n "}"
