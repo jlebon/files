@@ -1,5 +1,7 @@
 # jlebon/files
 
+**⚠️⚠️⚠️ This repo is archived. My dotfiles have moved to https://github.com/jlebon/dotfiles. ⚠️⚠️⚠️**
+
 Random files I like to SCM for easy tweaking and
 distributing.
 
